@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {browserHistory} from 'react-router';
 import {eveMailWriteTokens, eveMailGetNewAccessTokenWithRefreshToken, eveMailWriteTokensFromLocalStorage} from '../redux/actions';
 import {bindActionCreators} from 'redux';
+
+
 
 class EveToken extends Component {
   componentDidMount(){
@@ -10,13 +11,12 @@ class EveToken extends Component {
       let url = window.location.href;
       let authToken = url.slice(url.indexOf('=') + 1, url.indexOf('&'));
       this.props.eveMailWriteTokens(authToken, 1);
-      browserHistory.push('/eveMail');
     }
   }
   render(){
     return (
       <div>
-        Loading...
+        Grabbing Token...
       </div>
     );
   }

@@ -4,23 +4,13 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
 import Login from './login';
-import EveMail from './eve-mail'
-
-
-class AuthContainer extends Component {
-  constuctor() {
-    super()
-  }
-
-  render() {
-    return (
-
-    )
-  }
-}
+import Loading from './loading';
+import EveMail from './eve-mail';
 
 
 
+const AuthContainer = (props) => {
+  
 }
 
 mapStateToProps(state) {
@@ -29,4 +19,4 @@ mapStateToProps(state) {
   }
 }
 
-connect(mapStateToProps)(AuthContainer)
+export default connect(mapStateToProps)(AuthContainer)

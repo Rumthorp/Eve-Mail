@@ -24,6 +24,7 @@ router.route('/api/fetchAuthorizationCodeWithRefreshToken')
     res.send(data.data);
   })
   .catch((err) => {
+    console.log(err);
     res.sendStatus(500);
   });
 });

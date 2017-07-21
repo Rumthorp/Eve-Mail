@@ -3,7 +3,7 @@ import {eveMailMailHeaderDisplayChange, eveMailAuxWindowDisplayChange, eveMailFe
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
-class EveMailSidebar extends Component {
+class Sidebar extends Component {
   constructor() {
     super();
   }
@@ -45,4 +45,4 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(EveMailSidebar);
+export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);

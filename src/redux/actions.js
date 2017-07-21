@@ -1,21 +1,8 @@
 import axios from 'axios';
 
-import {
-  EVE_MAIL_FETCH_HEADERS,
-  EVE_MAIL_SORT_MAIL_HEADERS,
-  EVE_MAIL_WRITE_TOKENS,
-  EVE_MAIL_FETCH_CHARACTER_NAMES,
-  EVE_MAIL_CHANGE_UPDATE_STAGE,
-  EVE_MAIL_GET_MAIL_BODY,
-  EVE_MAIL_MAIL_HEADER_DISPLAY_CHANGE,
-  EVE_MAIL_AUX_WINDOW_DISPLAY_CHANGE,
-  EVE_MAIL_GET_NEW_ACCESS_TOKEN_WITH_REFRESH_TOKEN,
-  EVE_MAIL_WRITE_TOKENS_FROM_LOCAL_STORAGE,
-  EVE_MAIL_ADD_COMPOSE_SEND_ARRAY,
-  EVE_MAIL_REMOVE_COMPOSE_SEND_ARRAY
-} from './action-types';
 
-export function eveMailWriteTokens(authToken, updateStage) {
+
+export function fetchTokens(authCode, updateStage) {
   let tokenData;
   tokenData = axios.post('/api/fetchAuthorizationCode', {
     authToken: authToken,
@@ -38,14 +25,14 @@ export function eveMailWriteTokens(authToken, updateStage) {
   });
 
   return {
-    type: EVE_MAIL_WRITE_TOKENS,
+    type: "fetchTokens",
     payload: tokenData
   };
 }
 
 
 
-export function eveMailFetchHeaders(charId, authToken, updateStage, force, lastHeader) {
+export function fetchHeaders(charId, authToken, updateStage, force, lastHeader) {
 
   if (localStorage.getItem("mailHeaders") && force == false) {
     updateStage = 3;
@@ -81,7 +68,7 @@ export function eveMailFetchHeaders(charId, authToken, updateStage, force, lastH
     });
 
     return {
-      type: EVE_MAIL_FETCH_HEADERS,
+      type: "fetchHeaders",
       payload: mailHeaders
     };
   }
@@ -89,7 +76,7 @@ export function eveMailFetchHeaders(charId, authToken, updateStage, force, lastH
 
 
 
-export function eveMailSortMailHeaders (mailHeaders, updateStage) {
+export function sortMailHeaders (mailHeaders, updateStage) {
   let mailHeaderObj = {sentArray: [], corporationArray: [], allianceArray: [], personalArray: [], inboxArray: [], updateStage: updateStage};
   mailHeaders.forEach((ele) => {
     if (ele.from == 'Barten Lancaster') {
@@ -107,14 +94,14 @@ export function eveMailSortMailHeaders (mailHeaders, updateStage) {
   });
 
   return {
-    type: EVE_MAIL_SORT_MAIL_HEADERS,
+    type: "sortMailHeaders",
     payload: mailHeaderObj
   };
 }
 
 
 
-export function eveMailFetchCharacterNames (headerData, updateStage) {
+export function fetchCharacterNames (headerData, updateStage) {
   let refinedData = headerData;
   let idStr = '';
   refinedData.forEach((ele, ind, arr) => {
@@ -146,7 +133,7 @@ export function eveMailFetchCharacterNames (headerData, updateStage) {
   });
 
   return {
-    type: EVE_MAIL_FETCH_CHARACTER_NAMES,
+    type: "fetchCharacterNames",
     payload: charNameData
   };
 }
@@ -155,7 +142,7 @@ export function eveMailFetchCharacterNames (headerData, updateStage) {
 
 export function changeUpdateStage (stage) {
   return {
-    type: EVE_MAIL_CHANGE_UPDATE_STAGE,
+    type: "EVE_MAIL_CHANGE_UPDATE_STAGE",
     payload: stage
   };
 }
@@ -189,7 +176,7 @@ export function eveMailGetMailBody (charId, authToken, mailId, from) {
 
 export function eveMailMailHeaderDisplayChange (str) {
   return {
-    type: EVE_MAIL_MAIL_HEADER_DISPLAY_CHANGE,
+    type: "EVE_MAIL_MAIL_HEADER_DISPLAY_CHANGE",
     payload: str
   };
 }
@@ -198,7 +185,7 @@ export function eveMailMailHeaderDisplayChange (str) {
 
 export function eveMailAuxWindowDisplayChange (str) {
   return {
-    type: EVE_MAIL_AUX_WINDOW_DISPLAY_CHANGE,
+    type: "EVE_MAIL_AUX_WINDOW_DISPLAY_CHANGE",
     payload: str
   };
 }
@@ -225,7 +212,7 @@ export function eveMailGetNewAccessTokenWithRefreshToken (refreshToken, updateSt
     return tokenDataObj;
   });
   return {
-    type: EVE_MAIL_GET_NEW_ACCESS_TOKEN_WITH_REFRESH_TOKEN,
+    type: "EVE_MAIL_GET_NEW_ACCESS_TOKEN_WITH_REFRESH_TOKEN",
     payload: tokenData
   };
 }
@@ -240,7 +227,7 @@ export function eveMailWriteTokensFromLocalStorage (accessToken, refreshToken, a
   tokenDataObj.updateStage = updateStage;
 
   return {
-    type: EVE_MAIL_WRITE_TOKENS_FROM_LOCAL_STORAGE,
+    type: "EVE_MAIL_WRITE_TOKENS_FROM_LOCAL_STORAGE",
     payload: tokenDataObj
   };
 }
@@ -252,7 +239,7 @@ export function eveMailAddComposeSendArray (itemToAdd, array) {
   newArray.push(itemToAdd);
 
   return {
-    type: EVE_MAIL_ADD_COMPOSE_SEND_ARRAY,
+    type: "EVE_MAIL_ADD_COMPOSE_SEND_ARRAY",
     payload: newArray
   };
 }
@@ -264,7 +251,7 @@ export function eveMailRemoveComposeSendArray (ind, composeSendArray) {
   newArray.splice(ind, 1);
 
   return {
-    type: EVE_MAIL_REMOVE_COMPOSE_SEND_ARRAY,
+    type: "EVE_MAIL_REMOVE_COMPOSE_SEND_ARRAY",
     payload: newArray
   };
 }
