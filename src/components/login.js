@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { fetchTokens, fetchHeaders, fetchCharacterNames, sortMailHeaders } from '../redux/actions';
+import { fetchTokens } from '../redux/actions';
 const EVE_PIC = require('../assets/eve-login.png');
 
 
@@ -16,21 +16,7 @@ class Login extends Component {
     if (this.props.location.search) {
       let url = this.props.location.search;
       let authCode = url.slice(url.indexOf('=') + 1, url.indexOf('&'));
-      this.props.fetchTokens(authCode, this.props.updateStage + 1);
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.updateStage == 1) {
-      this.props.fetchHeaders(nextProps.characterId, nextProps.accessToken, nextProps.updateStage + 1, true);
-    }
-
-    if (nextProps.updateStage == 2) {
-      this.props.fetchCharacterNames(nextProps.mailHeaders, nextProps.updateStage + 1);
-    }
-
-    if (nextProps.updateStage == 3) {
-      this.props.sortMailHeaders(nextProps.mailHeaders, nextProps.updateStage + 1);
+      this.props.fetchTokens(authCode);
     }
   }
 
@@ -45,18 +31,10 @@ class Login extends Component {
   }
 }
 
+
+
 function mapDispatchToProps(dispatch){
-  return bindActionCreators({fetchTokens, fetchHeaders, fetchCharacterNames, sortMailHeaders}, dispatch);
+  return bindActionCreators({fetchTokens}, dispatch);
 }
 
-function mapStateToProps(state) {
-  return {
-    updateStage: state.eveMail.updateStage,
-    authUrl: state.eveMail.authUrl,
-    characterId: state.eveMail.characterId,
-    accessToken: state.eveMail.accessToken,
-    mailHeaders: state.eveMail.mailHeaders
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(null, mapDispatchToProps)(Login);

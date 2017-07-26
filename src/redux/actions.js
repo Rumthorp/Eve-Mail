@@ -2,19 +2,18 @@ import axios from 'axios';
 
 
 
-export function fetchTokens(authCode, updateStage) {
+export function fetchTokens(authCode) {
   let tokenData;
   tokenData = axios.post('/api/fetchAuthorizationCode', {
-    authToken: authToken,
+    authToken: authCode,
     encodedClientSecret: process.env.REACT_APP_EVE_MAIL_ENCODED_CLIENT_AND_SECRET
   })
   .then((data) => {
     let tokenDataObj = {};
     let accessTokenRefreshTime = Date.now() + 900000;
     tokenDataObj.tokenData = data;
-    tokenDataObj.updateStage = updateStage;
     tokenDataObj.accessTokenRefreshTime = accessTokenRefreshTime;
-    localStorage.setItem("tokens", JSON.stringify(
+    localStorage.setItem('tokens', JSON.stringify(
       {
         accessToken: data.data.access_token,
         refreshToken: data.data.refresh_token,
@@ -25,27 +24,25 @@ export function fetchTokens(authCode, updateStage) {
   });
 
   return {
-    type: "fetchTokens",
+    type: 'fetchTokens',
     payload: tokenData
   };
 }
 
 
 
-export function fetchHeaders(charId, authToken, updateStage, force, lastHeader) {
+export function fetchHeaders(charId, authToken, lastHeader) {
 
-  if (localStorage.getItem("mailHeaders") && force == false) {
-    updateStage = 3;
+  if (localStorage.getItem('mailHeaders') && force == false) {
     let mailHeaders = {};
-    mailHeaders.headers = JSON.parse(localStorage.getItem("mailHeaders"));
-    mailHeaders.updateStage = updateStage;
+    mailHeaders.headers = JSON.parse(localStorage.getItem('mailHeaders'));
 
     return {
       type: EVE_MAIL_FETCH_HEADERS,
       payload: mailHeaders
     };
   } else {
-    let newAuthToken = "Bearer " + authToken;
+    let newAuthToken = 'Bearer ' + authToken;
     let baseUrl = 'https://esi.tech.ccp.is/latest/characters/' + charId + '/mail/?';
     if (lastHeader) {
       baseUrl = baseUrl + 'last_mail_id=' + lastHeader + '&datasource=tranquility';
@@ -53,7 +50,7 @@ export function fetchHeaders(charId, authToken, updateStage, force, lastHeader) 
       baseUrl += '?datasource=tranquility';
     }
     let mailHeaders = axios({
-      method: "get",
+      method: 'get',
       url: baseUrl,
       headers: {
         Authorization: newAuthToken,
@@ -63,12 +60,11 @@ export function fetchHeaders(charId, authToken, updateStage, force, lastHeader) 
     .then((data) => {
       let headerObj = {};
       headerObj.headers = data.data;
-      headerObj.updateStage = updateStage;
       return headerObj;
     });
 
     return {
-      type: "fetchHeaders",
+      type: 'fetchHeaders',
       payload: mailHeaders
     };
   }
@@ -76,7 +72,45 @@ export function fetchHeaders(charId, authToken, updateStage, force, lastHeader) 
 
 
 
-export function sortMailHeaders (mailHeaders, updateStage) {
+export function fetchCharacterNames (headerData) {
+  let refinedData = headerData;
+  let idStr = '';
+  refinedData.forEach((ele, ind, arr) => {
+    if (ind == arr.length -1) {
+      idStr += ele.from;
+    } else {
+      idStr = idStr + ele.from + '%2C';
+    }
+  });
+  let url = 'https://esi.tech.ccp.is/latest/characters/names/?character_ids=';
+  url = url + idStr + '&datasource=tranquility';
+  let charNameData = axios({
+    method: 'get',
+    url: url,
+    headers: {
+      Accept: 'application/json'
+    }
+  })
+  .then((data) => {
+    let nameData = data.data;
+    refinedData.forEach((ele, ind, arr) => {
+      ele.from = nameData[ind].character_name;
+    });
+    localStorage.setItem('mailHeaders', JSON.stringify(refinedData));
+    let charNameDataObj = {};
+    charNameDataObj.charNameData = refinedData;
+    return charNameDataObj;
+  });
+
+  return {
+    type: 'fetchCharacterNames',
+    payload: charNameData
+  };
+}
+
+
+
+export function sortMailHeaders (mailHeaders) {
   let mailHeaderObj = {sentArray: [], corporationArray: [], allianceArray: [], personalArray: [], inboxArray: [], updateStage: updateStage};
   mailHeaders.forEach((ele) => {
     if (ele.from == 'Barten Lancaster') {
@@ -94,56 +128,8 @@ export function sortMailHeaders (mailHeaders, updateStage) {
   });
 
   return {
-    type: "sortMailHeaders",
+    type: 'sortMailHeaders',
     payload: mailHeaderObj
-  };
-}
-
-
-
-export function fetchCharacterNames (headerData, updateStage) {
-  let refinedData = headerData;
-  let idStr = '';
-  refinedData.forEach((ele, ind, arr) => {
-    if (ind == arr.length -1) {
-      idStr += ele.from;
-    } else {
-      idStr = idStr + ele.from + '%2C';
-    }
-  });
-  let url = 'https://esi.tech.ccp.is/latest/characters/names/?character_ids=';
-  url = url + idStr + '&datasource=tranquility';
-  let charNameData = axios({
-    method: "get",
-    url: url,
-    headers: {
-      Accept: 'application/json'
-    }
-  })
-  .then((data) => {
-    let nameData = data.data;
-    refinedData.forEach((ele, ind, arr) => {
-      ele.from = nameData[ind].character_name;
-    });
-    localStorage.setItem("mailHeaders", JSON.stringify(refinedData));
-    let charNameDataObj = {};
-    charNameDataObj.charNameData = refinedData;
-    charNameDataObj.updateStage = updateStage;
-    return charNameDataObj;
-  });
-
-  return {
-    type: "fetchCharacterNames",
-    payload: charNameData
-  };
-}
-
-
-
-export function changeUpdateStage (stage) {
-  return {
-    type: "EVE_MAIL_CHANGE_UPDATE_STAGE",
-    payload: stage
   };
 }
 
@@ -176,7 +162,7 @@ export function eveMailGetMailBody (charId, authToken, mailId, from) {
 
 export function eveMailMailHeaderDisplayChange (str) {
   return {
-    type: "EVE_MAIL_MAIL_HEADER_DISPLAY_CHANGE",
+    type: 'EVE_MAIL_MAIL_HEADER_DISPLAY_CHANGE',
     payload: str
   };
 }
@@ -185,14 +171,14 @@ export function eveMailMailHeaderDisplayChange (str) {
 
 export function eveMailAuxWindowDisplayChange (str) {
   return {
-    type: "EVE_MAIL_AUX_WINDOW_DISPLAY_CHANGE",
+    type: 'EVE_MAIL_AUX_WINDOW_DISPLAY_CHANGE',
     payload: str
   };
 }
 
 
 
-export function eveMailGetNewAccessTokenWithRefreshToken (refreshToken, updateStage) {
+export function getNewAccessTokenWithRefreshToken (refreshToken) {
   let tokenData = axios.post('/api/fetchAuthorizationCodeWithRefreshToken', {
     refreshToken: refreshToken,
     encodedClientSecret: process.env.REACT_APP_EVE_MAIL_ENCODED_CLIENT_AND_SECRET
@@ -200,9 +186,8 @@ export function eveMailGetNewAccessTokenWithRefreshToken (refreshToken, updateSt
   .then((data) => {
     let tokenDataObj = {};
     tokenDataObj.tokenData = data;
-    tokenDataObj.updateStage = updateStage;
     tokenDataObj.accessTokenRefreshTime = Date.now() + 900000;
-    localStorage.setItem("tokens", JSON.stringify(
+    localStorage.setItem('tokens', JSON.stringify(
       {
         accessToken: data.data.access_token,
         refreshToken: data.data.refresh_token,
@@ -212,22 +197,20 @@ export function eveMailGetNewAccessTokenWithRefreshToken (refreshToken, updateSt
     return tokenDataObj;
   });
   return {
-    type: "EVE_MAIL_GET_NEW_ACCESS_TOKEN_WITH_REFRESH_TOKEN",
+    type: 'getNewAccessTokenWithRefreshToken',
     payload: tokenData
   };
 }
 
 
 
-export function eveMailWriteTokensFromLocalStorage (accessToken, refreshToken, accessTokenRefreshTime, updateStage) {
+export function copyTokenDataFromLocalStorageToRedux (accessToken, refreshToken) {
   let tokenDataObj = {};
   tokenDataObj.accessToken = accessToken;
   tokenDataObj.refreshToken = refreshToken;
-  tokenDataObj.accessTokenRefreshTime = accessTokenRefreshTime;
-  tokenDataObj.updateStage = updateStage;
 
   return {
-    type: "EVE_MAIL_WRITE_TOKENS_FROM_LOCAL_STORAGE",
+    type: 'copyTokenDataFromLocalStorageToRedux',
     payload: tokenDataObj
   };
 }
@@ -239,7 +222,7 @@ export function eveMailAddComposeSendArray (itemToAdd, array) {
   newArray.push(itemToAdd);
 
   return {
-    type: "EVE_MAIL_ADD_COMPOSE_SEND_ARRAY",
+    type: 'EVE_MAIL_ADD_COMPOSE_SEND_ARRAY',
     payload: newArray
   };
 }
@@ -251,7 +234,49 @@ export function eveMailRemoveComposeSendArray (ind, composeSendArray) {
   newArray.splice(ind, 1);
 
   return {
-    type: "EVE_MAIL_REMOVE_COMPOSE_SEND_ARRAY",
+    type: 'EVE_MAIL_REMOVE_COMPOSE_SEND_ARRAY',
     payload: newArray
   };
+}
+
+
+
+export function updateTokenIntervalStatus (status) {
+  return {
+    type: 'updateTokenIntervalStatus',
+    payload: status
+  }
+}
+
+
+
+export function initialLoadComplete () {
+  return {
+    type: 'initialLoadComplete',
+    payload: true
+  }
+}
+
+
+
+export function initialTokenFetch (refreshToken) {
+  return (dispatch) => {
+    dispatch(getNewAccessTokenWithRefreshToken(refreshToken));
+    dispatch(tokensAreReady());
+  }
+}
+
+
+
+export function initialLoad (accessToken, refreshToken) {
+  return (dispatch, getState) => {
+
+    dispatch(copyTokenDataFromLocalStorageToRedux(accessToken, refreshToken))
+    dispatch(fetchAuthorizationCodeWithRefreshToken(getState().refreshToken))
+    dispatch(tokensAreReady('start interval'))
+    dispatch(fetchHeaders(getState().characterId, getState().accessToken));
+    dispatch(fetchCharacterNames(getState().mailHeaders));
+    dispatch(sortMailHeaders(getState().mailHeaders));
+    dispatch(initialLoadComplete())
+  }
 }

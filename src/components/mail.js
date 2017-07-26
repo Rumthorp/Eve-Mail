@@ -1,102 +1,53 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { eveMailFetchHeaders, eveMailFetchCharacterNames, eveMailSortMailHeaders, eveMailGetNewAccessTokenWithRefreshToken, eveMailWriteTokensFromLocalStorage } from '../redux/actions';
+
+import { initialLoad, updateTokenIntervalStatus, getNewAccessTokenWithRefreshToken } from '../redux/actions';
 import EveMailHeaderList from './eve-mail-header-list';
 const EVE_PIC = require('../assets/eve-login.png');
 
+
+
 class EveMail extends Component {
-  constructor() {
-    super();
-    let intervalId = setInterval(this.handleTokenTimer, 600000)
-    this.state = {intervalId: intervalId};
+  constructor(props) {
+    super(props);
+    this.state = {intervalId: null};
   }
 
   componentDidMount() {
-    
+    let tokenData = JSON.parse(localStorage.getItem("tokens"));
+    let {accessToken, refreshToken, accessTokenRefreshTime} = tokenData;
+    this.props.initialLoad(accessToken, refreshToken);
+
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.tokensAreReady == 'start interval') {
+      let intervalId = setInterval(this.props.getNewAccessTokenWithRefreshToken(this.props.refreshToken), 900000)
+      this.setState({intervalId: intervalId});
+      this.props.updateTokenIntervalStatus('interval started');
+    }
   }
 
   componentWillUnmount() {
-
+    clearInterval(this.state.intervalId);
   }
-
-  handleTokenTimer() {
-
-  }
-  // updateScreen() {
-  //   let screen;
-  //
-  //   if (JSON.parse(localStorage.getItem("tokens")) && this.props.updateStage == 0) {
-  //     let tokens = JSON.parse(localStorage.getItem("tokens"));
-  //     let currentTime = Date.now();
-  //     if (tokens.accessTokenRefreshTime < currentTime) {
-  //       this.props.eveMailGetNewAccessTokenWithRefreshToken(tokens.refreshToken, 1);
-  //     } else {
-  //       this.props.eveMailWriteTokensFromLocalStorage(tokens.accessToken, tokens.refreshToken, tokens.accessTokenRefreshTime, 1);
-  //     }
-  //   } else if (this.props.updateStage == 0) {
-  //     screen = (
-  //       <div>
-  //         <a href={this.props.authUrl}>
-  //           <img src={EVE_PIC} />
-  //         </a>
-  //       </div>
-  //     );
-  //   }
-  //
-  //   if (this.props.updateStage == 1) {
-  //
-  //     screen = (
-  //       <div>
-  //         <p>{this.props.updateStage}</p>
-  //       </div>
-  //     );
-  //   }
-  //
-  //   if (this.props.updateStage == 2) {
-  //     screen = (
-  //       <div>
-  //         <p>{this.props.updateStage}</p>
-  //       </div>
-  //     );
-  //   }
-  //
-  //   if (this.props.updateStage == 3) {
-  //     this.props.eveMailSortMailHeaders(this.props.mailHeaders, 4);
-  //     screen = (
-  //       <div>
-  //         <p>{this.props.updateStage}</p>
-  //       </div>
-  //     );
-  //   }
-  //
-  //   if (this.props.updateStage == 4) {
-  //     screen = (
-  //       <div>
-  //         <EveMailHeaderList mailHeaders={this.props.mailHeaders} />
-  //       </div>
-  //     );
-  //   }
-  //
-  //   return screen;
-  // }
 
   render() {
     return <h1>mail</h1>
   }
 }
 
+
+
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({eveMailFetchHeaders, eveMailFetchCharacterNames, eveMailSortMailHeaders, eveMailGetNewAccessTokenWithRefreshToken, eveMailWriteTokensFromLocalStorage}, dispatch);
+  return bindActionCreators({initialLoad, updateTokenIntervalStatus, getNewAccessTokenWithRefreshToken}, dispatch);
 }
 
 function mapStateToProps(state, ownProps) {
   return {
-    authUrl: state.eveMail.authUrl,
-    characterId: state.eveMail.characterId,
-    accessToken: state.eveMail.accessToken,
-    mailHeaders: state.eveMail.mailHeaders,
-    updateStage: state.eveMail.updateStage
+    tokenIntervalStatus: state.eveMail.tokenIntervalStatus,
+    initialLoadComplete: state.eveMail.initialLoadComplete
   };
 }
 
