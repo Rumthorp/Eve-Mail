@@ -23,7 +23,7 @@ class Login extends Component {
   render(){
     return (
       <div>
-        <a href={this.props.authUrl}>
+        <a href={'https://login.eveonline.com/oauth/authorize/?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Flogin&client_id=81577ff7ba9943ca8b95aef5656bc783&scope=esi%2Dmail%2Eorganize%5Fmail%2Ev1%20esi%2Dmail%2Eread%5Fmail%2Ev1%20esi%2Dmail%2Esend%5Fmail%2Ev1&state=uniquestate123'}>
           <img src={EVE_PIC} />
         </a>
       </div>

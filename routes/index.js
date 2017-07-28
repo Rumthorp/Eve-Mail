@@ -4,9 +4,9 @@ const axios = require("axios");
 
 
 
-router.route('/api/fetchAuthorizationCodeWithRefreshToken')
+router.route('/api/getNewAccessTokenWithRefreshToken')
 .post((req, res) => {
-  let encodedClientSecret = req.body.encodedClientSecret;
+  let encodedClientSecret = process.env.REACT_APP_EVE_MAIL_ENCODED_CLIENT_AND_SECRET;
   axios({
     method: "post",
     url: "https://login.eveonline.com/oauth/token",
@@ -33,7 +33,7 @@ router.route('/api/fetchAuthorizationCodeWithRefreshToken')
 
 router.route('/api/fetchAuthorizationCode')
 .post((req, res) => {
-  let encodedClientSecret = req.body.encodedClientSecret;
+  let encodedClientSecret = process.env.REACT_APP_EVE_MAIL_ENCODED_CLIENT_AND_SECRET;
   axios({
     method: "post",
     url: "https://login.eveonline.com/oauth/token",
@@ -44,7 +44,7 @@ router.route('/api/fetchAuthorizationCode')
     },
     params: {
       grant_type: "authorization_code",
-      code: req.body.authToken
+      code: req.body.authCode
     }
   })
   .then((data) => {
@@ -52,6 +52,7 @@ router.route('/api/fetchAuthorizationCode')
   })
   .catch((err) => {
     res.sendStatus(500);
+    console.log(err)
   });
 });
 

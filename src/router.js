@@ -9,7 +9,7 @@ import SideBar from './components/sidebar'
 const Router = (props) => (
   <div>
     <Route path='/mail' render={() => {
-      if (JSON.parse(localStorage.getItem('tokens'))) {
+      if (JSON.parse(localStorage.getItem('tokens')) || props.accessToken != null) {
         return (
           <div>
             <SideBar/>
@@ -22,7 +22,7 @@ const Router = (props) => (
 
     }}/>
     <Route path='/login' render={() => {
-      if (JSON.parse(localStorage.getItem('tokens'))) {
+      if (JSON.parse(localStorage.getItem('tokens')) || props.accessToken != null) {
         return <Redirect to='/mail'/>
       } else {
         return <Route path='/login' component={Login}/>
@@ -33,7 +33,7 @@ const Router = (props) => (
 
 function mapStateToProps(state) {
   return {
-    updateStage: state.eveMail.updateStage
+    accessToken: state.eveMail.accessToken
   }
 }
 

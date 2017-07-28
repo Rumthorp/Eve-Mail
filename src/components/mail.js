@@ -18,7 +18,6 @@ class EveMail extends Component {
     let tokenData = JSON.parse(localStorage.getItem("tokens"));
     let {accessToken, refreshToken, accessTokenRefreshTime} = tokenData;
     this.props.initialLoad(accessToken, refreshToken);
-
   }
 
   componentWillReceiveProps(nextProps) {

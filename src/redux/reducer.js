@@ -1,19 +1,14 @@
 import axios from 'axios';
 
 const initialState = {
-  authUrl: "https://login.eveonline.com/oauth/authorize/?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Flogin&client_id=81577ff7ba9943ca8b95aef5656bc783&scope=esi%2Dmail%2Eorganize%5Fmail%2Ev1%20esi%2Dmail%2Eread%5Fmail%2Ev1%20esi%2Dmail%2Esend%5Fmail%2Ev1&state=uniquestate123",
-  token: null,
   characterId: 1948822847,
+  characterName: null,
   accessToken: null,
   refreshToken: null,
-  tokensAreReady: false,
+  tokenIntervalStatus: null,
   initialLoadComplete: false,
+  rawMailHeaders: null,
   mailHeaders: null,
-  mailHeadersInbox: null,
-  mailHeadersCorporation: null,
-  mailHeadersAlliance: null,
-  mailHeadersPersonal: null,
-  mailHeadersSent: null,
   mailHeaderDisplay: 'mailHeadersInbox',
   auxWindowDisplay: null,
   mailRead: null,
@@ -22,15 +17,20 @@ const initialState = {
 
 export default function (state = initialState, action) {
   switch (action.type) {
-  case 'fetchHeaders':
-    return Object.assign({}, state, {
-      mailHeaders: action.payload.headers
-    });
   case 'fetchTokens':
     return Object.assign({}, state, {
       accessToken: action.payload.tokenData.data.access_token,
       refreshToken: action.payload.tokenData.data.refresh_token,
       accessTokenRefreshTime: action.payload.accessTokenRefreshTime
+    });
+  case 'fetchUserCharacterInfo':
+    return Object.assign({}, state, {
+      characterId: 1948822847,
+      characterName: null
+    })
+  case 'fetchHeaders':
+    return Object.assign({}, state, {
+      rawMailHeaders: action.payload.headers
     });
   case 'fetchCharacterNames':
     return Object.assign({}, state, {
@@ -75,9 +75,9 @@ export default function (state = initialState, action) {
     return Object.assign({}, state, {
       composeSendArray: action.payload
     });
-  case 'tokensAreReady':
+  case 'updateTokenIntervalStatus':
     return Object.assign({}, state, {
-      tokensAreReady: action.payload
+      tokenIntervalStatus: action.payload
     });
   case 'initialLoadComplete':
     return Object.assign({}, state, {
