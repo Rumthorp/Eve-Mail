@@ -4,19 +4,39 @@ const axios = require("axios");
 
 
 
+router.route('/api/fetchUserCharacterInfo')
+.post((req, res) => {
+  axios({
+    method: 'get',
+    url: 'https://login.eveonline.com/oauth/verify',
+    headers: {
+      Authorization: 'Bearer ' + req.body.accessToken
+    }
+  })
+  .then((data) => {
+    res.send(data.data)
+  })
+  .catch((err) => {
+    console.log(err);
+    res.sendStatus(500);
+  })
+});
+
+
+
 router.route('/api/getNewAccessTokenWithRefreshToken')
 .post((req, res) => {
-  let encodedClientSecret = process.env.REACT_APP_EVE_MAIL_ENCODED_CLIENT_AND_SECRET;
+  let encodedClientSecret = req.body.encodedClientSecret;
   axios({
-    method: "post",
-    url: "https://login.eveonline.com/oauth/token",
+    method: 'post',
+    url: 'https://login.eveonline.com/oauth/token',
     headers: {
       Authorization: encodedClientSecret,
       Host: 'login.eveonline.com',
       "Content-Type": 'application/json'
     },
     params: {
-      grant_type: "refresh_token",
+      grant_type: 'refresh_token',
       refresh_token: req.body.refreshToken
     }
   })
@@ -33,17 +53,17 @@ router.route('/api/getNewAccessTokenWithRefreshToken')
 
 router.route('/api/fetchAuthorizationCode')
 .post((req, res) => {
-  let encodedClientSecret = process.env.REACT_APP_EVE_MAIL_ENCODED_CLIENT_AND_SECRET;
+  let encodedClientSecret = req.body.encodedClientSecret;
   axios({
-    method: "post",
-    url: "https://login.eveonline.com/oauth/token",
+    method: 'post',
+    url: 'https://login.eveonline.com/oauth/token',
     headers: {
       Authorization: encodedClientSecret,
       Host: 'login.eveonline.com',
       "Content-Type": 'application/json'
     },
     params: {
-      grant_type: "authorization_code",
+      grant_type: 'authorization_code',
       code: req.body.authCode
     }
   })
@@ -51,8 +71,8 @@ router.route('/api/fetchAuthorizationCode')
     res.send(data.data);
   })
   .catch((err) => {
+    console.log(err);
     res.sendStatus(500);
-    console.log(err)
   });
 });
 

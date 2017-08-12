@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const initialState = {
-  characterId: 1948822847,
+  characterId: null,
   characterName: null,
   accessToken: null,
   refreshToken: null,
@@ -9,7 +9,8 @@ const initialState = {
   initialLoadComplete: false,
   rawMailHeaders: null,
   mailHeaders: null,
-  mailHeaderDisplay: 'mailHeadersInbox',
+  mailBodies: null,
+  inboxFilter: null,
   auxWindowDisplay: null,
   mailRead: null,
   composeSendArray: []
@@ -20,13 +21,12 @@ export default function (state = initialState, action) {
   case 'fetchTokens':
     return Object.assign({}, state, {
       accessToken: action.payload.tokenData.data.access_token,
-      refreshToken: action.payload.tokenData.data.refresh_token,
-      accessTokenRefreshTime: action.payload.accessTokenRefreshTime
+      refreshToken: action.payload.tokenData.data.refresh_token
     });
   case 'fetchUserCharacterInfo':
     return Object.assign({}, state, {
-      characterId: 1948822847,
-      characterName: null
+      characterId: action.payload.characterId,
+      characterName: action.payload.characterName
     })
   case 'fetchHeaders':
     return Object.assign({}, state, {
@@ -59,8 +59,7 @@ export default function (state = initialState, action) {
   case 'getNewAccessTokenWithRefreshToken':
     return Object.assign({}, state, {
       accessToken: action.payload.tokenData.data.access_token,
-      refreshToken: action.payload.tokenData.data.refresh_token,
-      accessTokenRefreshTime: action.payload.accessTokenRefreshTime
+      refreshToken: action.payload.tokenData.data.refresh_token
     });
   case 'copyTokenDataFromLocalStorageToRedux':
     return Object.assign({}, state, {

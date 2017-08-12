@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import {Switch, Route, Redirect, withRouter} from 'react-router-dom';
 
 import { initialLoad, updateTokenIntervalStatus, getNewAccessTokenWithRefreshToken } from '../redux/actions';
-import EveMailHeaderList from './eve-mail-header-list';
+import SideBar from './sidebar';
+import InboxContainer from './inbox-container';
 const EVE_PIC = require('../assets/eve-login.png');
 
 
@@ -21,10 +23,14 @@ class EveMail extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.tokensAreReady == 'start interval') {
-      let intervalId = setInterval(this.props.getNewAccessTokenWithRefreshToken(this.props.refreshToken), 900000)
+    if (nextProps.tokenIntervalStatus == 'start interval') {
+      let intervalId = setInterval(this.props.getNewAccessTokenWithRefreshToken.bind(this, this.props.refreshToken), 900000)
       this.setState({intervalId: intervalId});
       this.props.updateTokenIntervalStatus('interval started');
+    }
+
+    if (nextProps.initialLoadComplete == true && this.props.initialLoadComplete == false) {
+      this.props.history.push('/mail/inbox');
     }
   }
 
@@ -33,7 +39,12 @@ class EveMail extends Component {
   }
 
   render() {
-    return <h1>mail</h1>
+    return (
+      <div>
+        <SideBar />
+        <Route path='/mail/inbox' component={InboxContainer} />
+      </div>
+    )
   }
 }
 
@@ -43,11 +54,12 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({initialLoad, updateTokenIntervalStatus, getNewAccessTokenWithRefreshToken}, dispatch);
 }
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
   return {
     tokenIntervalStatus: state.eveMail.tokenIntervalStatus,
-    initialLoadComplete: state.eveMail.initialLoadComplete
+    initialLoadComplete: state.eveMail.initialLoadComplete,
+    refreshToken: state.eveMail.refreshToken
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(EveMail);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(EveMail));

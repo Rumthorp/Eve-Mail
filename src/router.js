@@ -4,22 +4,17 @@ import {connect} from 'react-redux';
 
 import Login from './components/login';
 import EveMail from './components/mail';
-import SideBar from './components/sidebar'
+
+
 
 const Router = (props) => (
   <div>
     <Route path='/mail' render={() => {
       if (JSON.parse(localStorage.getItem('tokens')) || props.accessToken != null) {
-        return (
-          <div>
-            <SideBar/>
-            <EveMail/>
-          </div>
-        )
+        return <EveMail/>
       } else {
         return <Redirect to='/login'/>
       }
-
     }}/>
     <Route path='/login' render={() => {
       if (JSON.parse(localStorage.getItem('tokens')) || props.accessToken != null) {
@@ -30,6 +25,8 @@ const Router = (props) => (
     }}/>
   </div>
 )
+
+
 
 function mapStateToProps(state) {
   return {

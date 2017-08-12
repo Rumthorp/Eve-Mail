@@ -5,7 +5,8 @@ import axios from 'axios';
 export function fetchTokens(authCode) {
   let tokenData;
   tokenData = axios.post('/api/fetchAuthorizationCode', {
-    authCode: authCode
+    authCode: authCode,
+    encodedClientSecret: process.env.REACT_APP_EVE_MAIL_ENCODED_CLIENT_AND_SECRET
   })
   .then((data) => {
     let tokenDataObj = {};
@@ -58,22 +59,18 @@ export function fetchHeaders(charId, accessToken, lastHeader) {
 
 
 export function fetchUserCharacterInfo (accessToken) {
-  let userCharacterInfo = axios({
-    method: 'get',
-    url: 'https://login.eveonline.com/oauth/verify',
-    headers: {
-      Authorization: 'Bearer ' + accessToken,
-      Host: 'login.eveonline.com',
-      "Content-Type": 'application/json'
-    }
+  let userCharacterInfo = axios.post('/api/fetchUserCharacterInfo', {
+    accessToken: accessToken
   })
   .then((data) => {
-    console.log(data);
+    let userCharacterInfo = {};
+    userCharacterInfo.characterId = data.data.CharacterID;
+    userCharacterInfo.characterName = data.data.CharacterName;
+    return userCharacterInfo;
   })
-
   return {
     type: 'fetchUserCharacterInfo',
-    payload: null
+    payload: userCharacterInfo
   }
 }
 
@@ -116,9 +113,9 @@ export function fetchCharacterNames (headerData) {
 
 
 
-export function eveMailGetMailBody (charId, authToken, mailId, from) {
+export function fetchMailBody (charId, accessToken, mailId) {
   let url = `https://esi.tech.ccp.is/latest/characters/${charId}/mail/${mailId}/?datasource=tranquility`;
-  let authorization = `Bearer ${authToken}`;
+  let authorization = `Bearer ${accessToken}`;
   let mailItem = axios({
     method: 'get',
     url: url,
@@ -129,12 +126,11 @@ export function eveMailGetMailBody (charId, authToken, mailId, from) {
   })
   .then((data) => {
     let mailItem = data.data;
-    mailItem.from = from;
     return mailItem;
   });
 
   return {
-    type: EVE_MAIL_GET_MAIL_BODY,
+    type: 'fetchMailBody',
     payload: mailItem
   };
 }
@@ -161,7 +157,8 @@ export function eveMailAuxWindowDisplayChange (str) {
 
 export function getNewAccessTokenWithRefreshToken (refreshToken) {
   let tokenData = axios.post('/api/getNewAccessTokenWithRefreshToken', {
-    refreshToken: refreshToken
+    refreshToken: refreshToken,
+    encodedClientSecret: process.env.REACT_APP_EVE_MAIL_ENCODED_CLIENT_AND_SECRET
   })
   .then((data) => {
     let tokenDataObj = {};
