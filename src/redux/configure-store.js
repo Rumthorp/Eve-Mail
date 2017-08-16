@@ -1,7 +1,8 @@
 import React from 'react';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
-import ReduxPromise from 'redux-promise';
+import reduxPromise from 'redux-promise';
+import reduxThunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension';
 
 import reducer from './reducer';
@@ -11,7 +12,7 @@ const store = createStore(
     eveMail: reducer,
     routing: routerReducer
   }),
-  composeWithDevTools(applyMiddleware(ReduxPromise))
+  composeWithDevTools(applyMiddleware(reduxPromise, reduxThunk))
 );
 
 export default store;

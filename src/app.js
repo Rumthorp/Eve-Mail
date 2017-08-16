@@ -10,7 +10,7 @@ import Router from './router';
 
 const HISTORY = syncHistoryWithStore(createBrowserHistory(), store);
 
-require('./styles/main.css');
+require('./styles/main.less');
 
 ReactDOM.render(
   <Provider store={store}>
