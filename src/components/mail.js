@@ -40,9 +40,13 @@ class EveMail extends Component {
 
   render() {
     return (
-      <div>
-        <SideBar />
-        <Route path='/mail/inbox' component={InboxContainer} />
+      <div className='main-div'>
+        <div className='sidebar-div'>
+          <SideBar />
+        </div>
+        <div className='sidebar-div'>
+          <Route path='/mail/inbox' component={InboxContainer} />
+        </div>
       </div>
     )
   }

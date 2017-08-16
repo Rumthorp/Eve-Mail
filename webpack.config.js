@@ -10,12 +10,15 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.css$/,
-        use: EXTRACT_TEXT_PLUGIN.extract({
-          fallback: "style-loader",
-          use: "css-loader"
-        })
-      },
+            test: /\.less$/,
+            use: [{
+                loader: "style-loader"
+            }, {
+                loader: "css-loader"
+            }, {
+                loader: "less-loader"
+            }]
+        },
       {
         test: /\.js$/,
         exclude: /(node_modules|bower_components)/,
@@ -29,7 +32,7 @@ module.exports = {
         ]
       },
       {
-        test: /\.(png|jpg)$/,
+        test: /\.(png|jpg|otf)$/,
         use: [
           {
             loader: 'url-loader'
