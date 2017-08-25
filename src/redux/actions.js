@@ -113,6 +113,43 @@ export function fetchCharacterNames (headerData) {
 
 
 
+export function replaceMailHeadersWithRawMailHeaders (rawMailHeaders) {
+  return {
+    type: 'replaceMailHeadersWithRawMailHeaders',
+    payload: rawMailHeaders
+  }
+}
+
+
+
+export function emptyRawMailHeaders () {
+  return {
+    type: 'emptyRawMailHeaders',
+    payload: []
+  }
+}
+
+
+
+export function addMailBodyAndHeaderToSelectedMailBody (body, header) {
+  let bodyHeaderObj = {header: header, body: body};
+  return {
+    type: 'addMailBodyAndHeaderToSelectedMailBody',
+    payload: bodyHeaderObj
+  }
+}
+
+
+
+export function makeSelectedMailBodyNull () {
+  return {
+    type: 'makeSelectedMailBodyNull',
+    payload: null
+  }
+}
+
+
+
 export function fetchMailBody (charId, accessToken, mailId) {
   let url = `https://esi.tech.ccp.is/latest/characters/${charId}/mail/${mailId}/?datasource=tranquility`;
   let authorization = `Bearer ${accessToken}`;
@@ -125,8 +162,9 @@ export function fetchMailBody (charId, accessToken, mailId) {
     }
   })
   .then((data) => {
-    let mailItem = data.data;
-    return mailItem;
+    let mailObj = {mailItem: data.data, mailId: mailId};
+    console.log(mailObj);
+    return mailObj;
   });
 
   return {
@@ -234,15 +272,51 @@ export function initialLoadComplete () {
 
 
 
-export function initialLoad (accessToken, refreshToken) {
+export function handleMailBody (mailId, headerIndex) {
   return (dispatch, getState) => {
-    if (getState().eveMail.accessToken == null || getState().eveMail.refreshToken == null) {
-      dispatch(copyTokenDataFromLocalStorageToRedux(accessToken, refreshToken));
+    if (getState().eveMail.mailBodies[mailId]) {
+      let header = getState().eveMail.mailBodies[mailId]
+      let body = getState().eveMail.mailHeaders[headerIndex]
+      dispatch(addMailBodyAndHeaderToSelectedMailBody(header, body));
+    } else {
+      let charId = getState().eveMail.characterId;
+      let accessToken = getState().eveMail.accessToken;
+      dispatch(fetchMailBody(charId, accessToken, mailId))
+      .then(() => {
+        let body = getState().eveMail.mailBodies[mailId];
+        let header = getState().eveMail.mailHeaders[headerIndex];
+        dispatch(addMailBodyAndHeaderToSelectedMailBody(body, header));
+      })
     }
-    dispatch(getNewAccessTokenWithRefreshToken(getState().eveMail.refreshToken))
+  }
+}
+
+
+
+export function refreshMailHeaders () {
+  return (dispatch, getState) => {
+    dispatch(fetchHeaders(getState().eveMail.characterId, getState().eveMail.accessToken))
+    .then(() => {
+      return dispatch(fetchCharacterNames(getState().eveMail.rawMailHeaders));
+    })
+    .then(() => {
+      dispatch(replaceMailHeadersWithRawMailHeaders(getState().eveMail.rawMailHeaders));
+      dispatch(emptyRawMailHeaders());
+    })
+  }
+}
+
+
+
+export function initialLoad (needNewToken) {
+
+  return (dispatch, getState) => {
+    let tokenData = JSON.parse(localStorage.getItem("tokens"));
+
+    dispatch(getNewAccessTokenWithRefreshToken(tokenData.refreshToken))
     .then(() => {
       dispatch(updateTokenIntervalStatus('start interval'));
-      return dispatch(fetchUserCharacterInfo(getState().eveMail.accessToken))
+      return dispatch(fetchUserCharacterInfo(getState().eveMail.accessToken));
     })
     .then(() => {
       return dispatch(fetchHeaders(getState().eveMail.characterId, getState().eveMail.accessToken));
@@ -251,6 +325,8 @@ export function initialLoad (accessToken, refreshToken) {
       return dispatch(fetchCharacterNames(getState().eveMail.rawMailHeaders));
     })
     .then(() => {
+      dispatch(replaceMailHeadersWithRawMailHeaders(getState().eveMail.rawMailHeaders));
+      dispatch(emptyRawMailHeaders());
       dispatch(initialLoadComplete());
     })
   }

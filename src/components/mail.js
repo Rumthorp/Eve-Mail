@@ -17,9 +17,7 @@ class EveMail extends Component {
   }
 
   componentDidMount() {
-    let tokenData = JSON.parse(localStorage.getItem("tokens"));
-    let {accessToken, refreshToken, accessTokenRefreshTime} = tokenData;
-    this.props.initialLoad(accessToken, refreshToken);
+    this.props.initialLoad();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -41,10 +39,10 @@ class EveMail extends Component {
   render() {
     return (
       <div className='main-div'>
-        <div className='sidebar-div'>
+        <div className='sidebar-shell'>
           <SideBar />
         </div>
-        <div className='sidebar-div'>
+        <div className='mail-shell'>
           <Route path='/mail/inbox' component={InboxContainer} />
         </div>
       </div>
