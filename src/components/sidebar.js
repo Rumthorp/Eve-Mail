@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
-import {eveMailMailHeaderDisplayChange, eveMailAuxWindowDisplayChange, fetchHeaders} from '../redux/actions';
+import { refreshMailHeaders } from '../redux/actions';
 
 
 
@@ -11,20 +11,17 @@ class Sidebar extends Component {
     super();
   }
   clickRefresh() {
-    let characterId = this.props.eveMail.characterId;
-    let accessToken = this.props.eveMail.accessToken;
-    this.props.fetchHeaders(characterId, accessToken, 2, true);
+    this.props.refreshMailHeaders();
   }
   clickCompose() {
-    this.props.eveMailAuxWindowDisplayChange('compose');
+    
   }
   clickSpecificMailList(str) {
-    this.props.eveMailMailHeaderDisplayChange(str);
-    this.props.eveMailAuxWindowDisplayChange(null);
+
   }
   render() {
     return (
-      <div>
+      <div className='sidebar-content'>
         <button onClick={this.clickRefresh.bind(this)}>Refresh</button>
         <br/>
         <button onClick={this.clickCompose.bind(this)}>Compose</button>
@@ -48,12 +45,13 @@ class Sidebar extends Component {
 
 
 function mapDispatchToProps(dispatch){
-  return bindActionCreators({eveMailMailHeaderDisplayChange, eveMailAuxWindowDisplayChange, fetchHeaders}, dispatch);
+  return bindActionCreators({refreshMailHeaders}, dispatch);
 }
 
 function mapStateToProps(state, ownProps) {
   return {
-    eveMail: state.eveMail
+    characterId: state.eveMail.characterId,
+    accessToken: state.eveMail.accessToken
   };
 }
 

@@ -3,7 +3,7 @@ import React from 'react';
 
 
 const Inbox = (props) => (
-  <div>
+  <div className='mail-headers'>
     {props.headers}
   </div>
 )

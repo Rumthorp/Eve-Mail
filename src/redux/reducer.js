@@ -7,9 +7,10 @@ const initialState = {
   refreshToken: null,
   tokenIntervalStatus: null,
   initialLoadComplete: false,
-  rawMailHeaders: null,
-  mailHeaders: null,
-  mailBodies: null,
+  rawMailHeaders: [],
+  mailHeaders: [],
+  mailBodies: {},
+  selectedMailBody: null,
   inboxFilter: null,
   auxWindowDisplay: null,
   mailRead: null,
@@ -34,8 +35,16 @@ export default function (state = initialState, action) {
     });
   case 'fetchCharacterNames':
     return Object.assign({}, state, {
-      mailHeaders: action.payload.charNameData
+      rawMailHeaders: action.payload.charNameData
     });
+  case 'replaceMailHeadersWithRawMailHeaders':
+    return Object.assign({}, state, {
+      mailHeaders: action.payload
+    })
+  case 'emptyRawMailHeaders':
+    return Object.assign({}, state, {
+      rawMailHeaders: action.payload
+    })
   case 'sortMailHeaders':
     return Object.assign({}, state, {
       mailHeadersInbox: action.payload.inboxArray,
@@ -44,9 +53,20 @@ export default function (state = initialState, action) {
       mailHeadersPersonal: action.payload.personalArray,
       mailHeadersSent: action.payload.sentArray
     });
-  case 'EVE_MAIL_GET_MAIL_BODY':
+  case 'addMailBodyAndHeaderToSelectedMailBody':
+    console.log(action.payload);
     return Object.assign({}, state, {
-      mailRead: action.payload
+      selectedMailBody: action.payload
+    })
+  case 'makeSelectedMailBodyNull':
+    return Object.assign({}, state, {
+      selectedMailBody: action.payload
+    })
+  case 'fetchMailBody':
+    let newMailBodies = state.mailBodies;
+    newMailBodies[action.payload.mailId] = action.payload.mailItem;
+    return Object.assign({}, state, {
+      mailBodies: newMailBodies
     });
   case 'EVE_MAIL_MAIL_HEADER_DISPLAY_CHANGE':
     return Object.assign({}, state, {
