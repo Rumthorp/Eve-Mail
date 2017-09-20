@@ -5,7 +5,7 @@ import axios from 'axios';
 import {eveMailAddComposeSendArray} from '../redux/actions';
 
 class EveNameSearch extends Component {
-  constructor() {
+  constructor () {
     super();
     this.state = {
       searchName: '',
@@ -14,10 +14,10 @@ class EveNameSearch extends Component {
       sendList: []
     };
   }
-  updateSearchName(e) {
+  updateSearchName (e) {
     this.setState({searchName: e.currentTarget.value});
   }
-  validateName(e) {
+  validateName (e) {
     e.preventDefault();
     if (this.state.validateIsBusy) {
       alert('Service is busy');
@@ -61,14 +61,14 @@ class EveNameSearch extends Component {
     }
   }
 
-  selectRawName(e) {
+  selectRawName (e) {
     let nameObj = {};
     nameObj.character_name = e.target.options[e.target.selectedIndex].text;
     nameObj.character_id = e.currentTarget.value;
     this.props.eveMailAddComposeSendArray(nameObj, this.props.composeSendArray);
   }
 
-  render() {
+  render () {
     let select = null;
     if (this.state.rawCharacterList) {
       let optionArray = [];
@@ -102,7 +102,7 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state, ownProps) {
   return {
-    composeSendArray: state.eveMail
+    composeSendArray: state.eveMail.
   };
 }
 

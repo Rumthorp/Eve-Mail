@@ -2,24 +2,24 @@ import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
-import { refreshMailHeaders } from '../redux/actions';
+import { refreshMailHeaders, updateComposeView } from '../redux/actions';
 
 
 
 class Sidebar extends Component {
-  constructor() {
+  constructor () {
     super();
   }
-  clickRefresh() {
+  clickRefresh () {
     this.props.refreshMailHeaders();
   }
-  clickCompose() {
-    
+  clickCompose () {
+    this.props.updateComposeView('opened')
   }
-  clickSpecificMailList(str) {
+  clickSpecificMailList (str) {
 
   }
-  render() {
+  render () {
     return (
       <div className='sidebar-content'>
         <button onClick={this.clickRefresh.bind(this)}>Refresh</button>
@@ -44,11 +44,11 @@ class Sidebar extends Component {
 
 
 
-function mapDispatchToProps(dispatch){
-  return bindActionCreators({refreshMailHeaders}, dispatch);
+function mapDispatchToProps (dispatch) {
+  return bindActionCreators({refreshMailHeaders, updateComposeView}, dispatch);
 }
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps (state, ownProps) {
   return {
     characterId: state.eveMail.characterId,
     accessToken: state.eveMail.accessToken
