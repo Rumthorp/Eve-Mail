@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 
 import Inbox from './inbox';
 import Header from './header';
@@ -11,17 +11,17 @@ import {handleMailBody} from '../redux/actions';
 
 
 class InboxContainer extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.click = this.click.bind(this);
   }
 
-  click(mailId, headerIndex) {
+  click (mailId, headerIndex) {
     this.props.handleMailBody(mailId, headerIndex);
     this.props.history.push(`/mail/inbox/${mailId}`)
   }
 
-  render() {
+  render () {
     if (this.props.mailHeaders == null) {
       return <Redirect to='/mail' />
     }
@@ -57,4 +57,4 @@ function mapStateToProps (state) {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(InboxContainer);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(InboxContainer));

@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 
 
 
-const MailBody = ({subject, body, click}) => (
+const MailBody = ({subject, body, backClick, deleteClick}) => (
   <div>
-    <button onClick={click}>Back</button>
+    <button onClick={backClick}>Back</button>
+    <button onClick={deleteClick}>Delete</button>
     <h3>{subject}</h3>
     <br/>
     <p>{body}</p>

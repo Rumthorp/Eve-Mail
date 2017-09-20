@@ -6,21 +6,22 @@ import {Switch, Route, Redirect, withRouter} from 'react-router-dom';
 import { initialLoad, updateTokenIntervalStatus, getNewAccessTokenWithRefreshToken } from '../redux/actions';
 import SideBar from './sidebar';
 import InboxContainer from './inbox-container';
+import QuillContainer from './quill-container';
 const EVE_PIC = require('../assets/eve-login.png');
 
 
 
 class EveMail extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {intervalId: null};
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.props.initialLoad();
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     if (nextProps.tokenIntervalStatus == 'start interval') {
       let intervalId = setInterval(this.props.getNewAccessTokenWithRefreshToken.bind(this, this.props.refreshToken), 900000)
       this.setState({intervalId: intervalId});
@@ -32,11 +33,13 @@ class EveMail extends Component {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     clearInterval(this.state.intervalId);
   }
 
-  render() {
+  render () {
+    let cView = this.props.composeView
+
     return (
       <div className='main-div'>
         <div className='sidebar-shell'>
@@ -45,6 +48,9 @@ class EveMail extends Component {
         <div className='mail-shell'>
           <Route path='/mail/inbox' component={InboxContainer} />
         </div>
+        <div className={cView === 'opened' ? 'compose-shell' : cView === 'minimized' ? 'compose-shell-min' : ''}>
+          <QuillContainer />
+        </div>
       </div>
     )
   }
@@ -52,15 +58,16 @@ class EveMail extends Component {
 
 
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps (dispatch) {
   return bindActionCreators({initialLoad, updateTokenIntervalStatus, getNewAccessTokenWithRefreshToken}, dispatch);
 }
 
-function mapStateToProps(state) {
+function mapStateToProps (state) {
   return {
     tokenIntervalStatus: state.eveMail.tokenIntervalStatus,
     initialLoadComplete: state.eveMail.initialLoadComplete,
-    refreshToken: state.eveMail.refreshToken
+    refreshToken: state.eveMail.refreshToken,
+    composeView: state.eveMail.composeView
   };
 }
 

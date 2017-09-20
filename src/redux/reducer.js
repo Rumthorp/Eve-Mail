@@ -12,9 +12,12 @@ const initialState = {
   mailBodies: {},
   selectedMailBody: null,
   inboxFilter: null,
-  auxWindowDisplay: null,
-  mailRead: null,
-  composeSendArray: []
+  composeView: 'closed',
+  sendArray: [],
+  quillData: null,
+  nameSearchVisible: false,
+  nameSearchBusy: false,
+  nameSearchResults: null
 };
 
 export default function (state = initialState, action) {
@@ -54,7 +57,6 @@ export default function (state = initialState, action) {
       mailHeadersSent: action.payload.sentArray
     });
   case 'addMailBodyAndHeaderToSelectedMailBody':
-    console.log(action.payload);
     return Object.assign({}, state, {
       selectedMailBody: action.payload
     })
@@ -68,14 +70,17 @@ export default function (state = initialState, action) {
     return Object.assign({}, state, {
       mailBodies: newMailBodies
     });
-  case 'EVE_MAIL_MAIL_HEADER_DISPLAY_CHANGE':
+  case 'deleteMailWithApiCall':
+    return Object.assign({}, state);
+  case 'deleteHeader':
+    let newMailHeaders = state.mailHeaders.filter((header, index) => index !== action.payload)
     return Object.assign({}, state, {
-      mailHeaderDisplay: action.payload
-    });
-  case 'EVE_MAIL_AUX_WINDOW_DISPLAY_CHANGE':
-    return Object.assign({}, state, {
-      auxWindowDisplay: action.payload
-    });
+      mailHeaders: newMailHeaders
+    })
+  case 'deleteMailBody':
+    let copy = Object.assign({}, state);
+    delete copy.mailBodies[action.payload];
+    return copy;
   case 'getNewAccessTokenWithRefreshToken':
     return Object.assign({}, state, {
       accessToken: action.payload.tokenData.data.access_token,
@@ -86,13 +91,9 @@ export default function (state = initialState, action) {
       accessToken: action.payload.accessToken,
       refreshToken: action.payload.refreshToken
     });
-  case 'EVE_MAIL_ADD_COMPOSE_SEND_ARRAY':
+  case 'updateComposeView':
     return Object.assign({}, state, {
-      composeSendArray: action.payload
-    });
-  case 'EVE_MAIL_REMOVE_COMPOSE_SEND_ARRAY':
-    return Object.assign({}, state, {
-      composeSendArray: action.payload
+      composeView: action.payload
     });
   case 'updateTokenIntervalStatus':
     return Object.assign({}, state, {
@@ -101,6 +102,18 @@ export default function (state = initialState, action) {
   case 'initialLoadComplete':
     return Object.assign({}, state, {
       initialLoadComplete: action.payload
+    })
+  case 'updateNameSearchVisible':
+    return Object.assign({}, state, {
+      nameSearchVisible: action.payload
+    })
+  case 'updateNameSearchBusy':
+    return Object.assign({}, state, {
+      nameSearchBusy: action.payload
+    })
+  case 'nameSearch':
+    return Object.assign({}, state, {
+      nameSearchResults: action.payload
     })
   }
   return state;

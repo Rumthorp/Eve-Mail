@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 
-export function fetchTokens(authCode) {
+export function fetchTokens (authCode) {
   let tokenData;
   tokenData = axios.post('/api/fetchAuthorizationCode', {
     authCode: authCode,
@@ -28,7 +28,7 @@ export function fetchTokens(authCode) {
 
 
 
-export function fetchHeaders(charId, accessToken, lastHeader) {
+export function fetchHeaders (charId, accessToken, lastHeader) {
   let newAuthToken = 'Bearer ' + accessToken;
   let baseUrl = 'https://esi.tech.ccp.is/latest/characters/' + charId + '/mail/?';
   if (lastHeader) {
@@ -131,8 +131,8 @@ export function emptyRawMailHeaders () {
 
 
 
-export function addMailBodyAndHeaderToSelectedMailBody (body, header) {
-  let bodyHeaderObj = {header: header, body: body};
+export function addMailBodyAndHeaderToSelectedMailBody (body, header, mailId, headerIndex) {
+  let bodyHeaderObj = {header: header, body: body, mailId: mailId, headerIndex: headerIndex};
   return {
     type: 'addMailBodyAndHeaderToSelectedMailBody',
     payload: bodyHeaderObj
@@ -163,7 +163,6 @@ export function fetchMailBody (charId, accessToken, mailId) {
   })
   .then((data) => {
     let mailObj = {mailItem: data.data, mailId: mailId};
-    console.log(mailObj);
     return mailObj;
   });
 
@@ -175,20 +174,55 @@ export function fetchMailBody (charId, accessToken, mailId) {
 
 
 
-export function eveMailMailHeaderDisplayChange (str) {
+export function updateComposeView (status) {
   return {
-    type: 'EVE_MAIL_MAIL_HEADER_DISPLAY_CHANGE',
-    payload: str
-  };
+    type: 'updateComposeView',
+    payload: status
+  }
 }
 
 
 
-export function eveMailAuxWindowDisplayChange (str) {
+export function deleteMailWithApiCall (characterId, mailId, accessToken) {
+  let url = `https://esi.tech.ccp.is/latest/characters/${characterId}/mail/${mailId}/?datasource=tranquility`;
+  let authorization = `Bearer ${accessToken}`;
+  let deleteConfirmation = axios({
+    method: 'delete',
+    url: url,
+    headers: {
+      Accept: 'application/json',
+      Authorization: authorization
+    }
+  })
+  .then((data) => {
+    return {success: true};
+  })
+  .catch((err) => {
+    return {success: false};
+  })
+
   return {
-    type: 'EVE_MAIL_AUX_WINDOW_DISPLAY_CHANGE',
-    payload: str
-  };
+    type: 'deleteMailWithApiCall',
+    payload: deleteConfirmation
+  }
+}
+
+
+
+export function deleteHeader (headerIndex) {
+  return {
+    type: 'deleteHeader',
+    payload: headerIndex
+  }
+}
+
+
+
+export function deleteMailBody (mailId) {
+  return {
+    type: 'deleteMailBody',
+    payload: mailId
+  }
 }
 
 
@@ -272,6 +306,92 @@ export function initialLoadComplete () {
 
 
 
+export function updateNameSearchVisible (status) {
+  return {
+    type: 'updateNameSearchVisible',
+    payload: status
+  }
+}
+
+
+
+export function updateNameSearchBusy (status) {
+  return {
+    type: 'updateNameSearchBusy',
+    payload: status
+  }
+}
+
+
+
+export function nameSearch (name) {
+  let url = 'https://esi.tech.ccp.is/latest/search/?search=' + name + '&categories=character&language=en-us&strict=false&datasource=tranquility';
+
+  let nameSearchResults = axios({
+    method: 'get',
+    url: url,
+    headers: {
+      Accept: 'application/json'
+    }
+  })
+  .then((data) => {
+    let secondUrl = 'https://esi.tech.ccp.is/latest/characters/names/?character_ids=';
+    let charIdArray = data.data.character;
+    let idStr = '';
+    charIdArray.forEach((ele, ind, arr) => {
+      if (ind === arr.length -1) {
+        idStr += ele;
+      } else {
+        idStr = idStr + ele + '%2C';
+      }
+    });
+    secondUrl = secondUrl + idStr + '&datasource=tranquility';
+    return axios({
+      method: "get",
+      url: secondUrl,
+      headers: {
+        Accept: 'application/json'
+      }
+    })
+    .then((data) => {
+      return data.data;
+    })
+  })
+
+  return {
+    type: 'nameSearch',
+    payload: nameSearchResults
+  }
+}
+
+
+
+export function nameSearchChain (name) {
+  return (dispatch) => {
+    dispatch(updateNameSearchBusy(true));
+    dispatch(nameSearch(name))
+    .then(() => {
+      dispatch(updateNameSearchBusy(false));
+    })
+  }
+}
+
+
+
+export function deleteMail (mailId, headerIndex) {
+  return (dispatch, getState) => {
+    dispatch(deleteMailWithApiCall(getState().eveMail.characterId, mailId, getState().eveMail.accessToken))
+    .then((data) => {
+      if (data.payload.success) {
+        dispatch(deleteHeader(headerIndex));
+        dispatch(deleteMailBody(mailId));
+      }
+    })
+  }
+}
+
+
+
 export function handleMailBody (mailId, headerIndex) {
   return (dispatch, getState) => {
     if (getState().eveMail.mailBodies[mailId]) {
@@ -285,7 +405,7 @@ export function handleMailBody (mailId, headerIndex) {
       .then(() => {
         let body = getState().eveMail.mailBodies[mailId];
         let header = getState().eveMail.mailHeaders[headerIndex];
-        dispatch(addMailBodyAndHeaderToSelectedMailBody(body, header));
+        dispatch(addMailBodyAndHeaderToSelectedMailBody(body, header, mailId, headerIndex));
       })
     }
   }

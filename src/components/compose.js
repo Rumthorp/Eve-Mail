@@ -6,27 +6,27 @@ import EveNameSearch from './eve-mail-name-search';
 import axios from 'axios';
 
 class Compose extends Component {
-  constructor() {
+  constructor () {
     super();
     this.state = {
       subject: '',
       body: ''
     };
   }
-  updateSubject(e) {
+  updateSubject (e) {
     this.setState({subject: e.currentTarget.value});
   }
-  updateBody(e) {
+  updateBody (e) {
     this.setState({body: e.currentTarget.value});
   }
-  clickBack() {
+  clickBack () {
     this.props.eveMailAuxWindowDisplayChange(null);
   }
-  removeSender(ind, event) {
+  removeSender (ind, event) {
     event.preventDefault();
     this.props.eveMailRemoveComposeSendArray(ind, this.props.eveMail.composeSendArray);
   }
-  sendMail() {
+  sendMail () {
     let url = 'https://esi.tech.ccp.is/latest/characters/' + this.props.eveMail.characterId + '/mail/?datasource=tranquility';
     let accessToken = 'Bearer ' + this.props.eveMail.accessToken;
     let recipientsArray = [];
@@ -55,7 +55,7 @@ class Compose extends Component {
 
     });
   }
-  render() {
+  render () {
     let sendList;
 
     if (this.props.eveMail.composeSendArray.length > 0) {
@@ -91,11 +91,11 @@ class Compose extends Component {
   }
 }
 
-function mapDispatchToProps(dispatch){
+function mapDispatchToProps (dispatch) {
   return bindActionCreators({eveMailAuxWindowDisplayChange, eveMailRemoveComposeSendArray}, dispatch);
 }
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps (state, ownProps) {
   return {
     eveMail: state.eveMail
   };
