@@ -5,6 +5,7 @@ import {Switch, Route, Redirect, withRouter} from 'react-router-dom';
 
 import { initialLoad, updateTokenIntervalStatus, getNewAccessTokenWithRefreshToken } from '../redux/actions';
 import SideBar from './sidebar';
+import NameSearchBar from './name-searchbar';
 import InboxContainer from './inbox-container';
 import QuillContainer from './quill-container';
 const EVE_PIC = require('../assets/eve-login.png');
@@ -47,6 +48,9 @@ class EveMail extends Component {
         </div>
         <div className='mail-shell'>
           <Route path='/mail/inbox' component={InboxContainer} />
+        </div>
+        <div>
+          <NameSearchBar />
         </div>
         <div className={cView === 'opened' ? 'compose-shell' : cView === 'minimized' ? 'compose-shell-min' : ''}>
           <QuillContainer />

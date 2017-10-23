@@ -1,29 +1,29 @@
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
 import ReactQuill from 'react-quill';
 import { connect } from 'react-redux';
 
 import ComposeTopbar from './compose-topbar';
 import SendBar from './sendbar';
-import NameSearchBar from './name-searchbar';
-
+import SubjectBar from './subjectbar'
+import { updateMessage } from '../redux/actions';
 
 
 class QuillContainer extends Component {
   constructor (props) {
     super(props);
-    this.state = {text: ''};
     this.handleChange = this.handleChange.bind(this);
   }
 
   handleChange (value) {
-    this.setState({text: value})
+    this.props.updateMessage(value);
   }
 
   render () {
     let topBar = null;
     let sendBar = null;
+    let subject = null;
     let quill = null;
-    let nameSearchBar = null;
 
     if (this.props.composeView === 'opened' || this.props.composeView === 'minimized') {
       topBar = <ComposeTopbar composeView={this.props.composeView} />
@@ -31,24 +31,19 @@ class QuillContainer extends Component {
 
     if (this.props.composeView === 'opened') {
       sendBar = <SendBar />
-      quill = <ReactQuill value={this.state.text}
+      subject = <SubjectBar />
+      quill = <ReactQuill value={this.props.message}
                           onChange={this.handleChange}
                           theme='snow'
                           />
-    }
-
-    if (this.props.composeView === 'opened' && this.props.nameSearchVisible) {
-      nameSearchBar = <NameSearchBar />
     }
 
     return (
       <div>
         {topBar}
         {sendBar}
+        {subject}
         {quill}
-        <div className='nameSearchBarDiv'>
-          {nameSearchBar}
-        </div>
       </div>
     )
   }
@@ -59,8 +54,12 @@ class QuillContainer extends Component {
 function mapStateToProps (state) {
   return {
     composeView: state.eveMail.composeView,
-    nameSearchVisible: state.eveMail.nameSearchVisible
+    message: state.eveMail.message
   }
 }
 
-export default connect(mapStateToProps)(QuillContainer);
+function mapDispatchToProps (dispatch) {
+  return bindActionCreators({updateMessage} ,dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(QuillContainer);

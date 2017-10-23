@@ -14,7 +14,8 @@ const initialState = {
   inboxFilter: null,
   composeView: 'closed',
   sendArray: [],
-  quillData: null,
+  subject: null,
+  message: null,
   nameSearchVisible: false,
   nameSearchBusy: false,
   nameSearchResults: null
@@ -73,7 +74,7 @@ export default function (state = initialState, action) {
   case 'deleteMailWithApiCall':
     return Object.assign({}, state);
   case 'deleteHeader':
-    let newMailHeaders = state.mailHeaders.filter((header, index) => index !== action.payload)
+    let newMailHeaders = state.mailHeaders.filter((ele, ind) => ind !== action.payload);
     return Object.assign({}, state, {
       mailHeaders: newMailHeaders
     })
@@ -111,10 +112,31 @@ export default function (state = initialState, action) {
     return Object.assign({}, state, {
       nameSearchBusy: action.payload
     })
+  case 'pushSendArray':
+    let newSendArray = [...state.sendArray];
+    newSendArray.push(action.payload);
+    return Object.assign({}, state, {
+      sendArray: newSendArray
+    })
+  case 'removeSendArray':
+    let newSendArray2 = state.sendArray.filter((ele, ind) => ind !== action.payload);
+    return Object.assign({}, state, {
+      sendArray: newSendArray2
+    })
   case 'nameSearch':
     return Object.assign({}, state, {
       nameSearchResults: action.payload
     })
+  case 'updateSubject':
+    return Object.assign({}, state, {
+      subject: action.payload
+    })
+  case 'updateMessage':
+    return Object.assign({}, state, {
+      message: action.payload
+    })
+  case 'logout':
+    state = undefined;
   }
   return state;
 }
