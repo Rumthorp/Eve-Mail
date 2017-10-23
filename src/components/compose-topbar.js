@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { updateComposeView } from '../redux/actions';
+import { updateComposeView, updateNameSearchVisible, sendMailChain } from '../redux/actions';
 
 
 
 class ComposeTopbar extends Component {
   constructor (props) {
     super(props);
+    this.findNameClick = this.findNameClick.bind(this);
+    this.sendClick = this.sendClick.bind(this);
   }
 
   handleButtonClick (value) {
@@ -18,10 +20,24 @@ class ComposeTopbar extends Component {
     }
   }
 
+  findNameClick () {
+    let status = true;
+    if (this.props.nameSearchVisible) {
+      status = false;
+    }
+
+    this.props.updateNameSearchVisible(status);
+  }
+
+  sendClick () {
+    this.props.sendMailChain()
+  }
+
   render () {
     return (
       <div className='compose-topbar'>
-        {this.props.composeView === 'opened' && <button>Send</button>}
+        {this.props.composeView === 'opened' && <button onClick={this.findNameClick}>Find Name</button>}
+        {this.props.composeView === 'opened' && <button onClick={this.sendClick}>Send</button>}
         <button className='right-buttons' onClick={this.handleButtonClick.bind(this, 'closed')}>X</button>
         <button className='right-buttons' onClick={this.handleButtonClick.bind(this, 'minimized')}>_</button>
       </div>
@@ -31,8 +47,14 @@ class ComposeTopbar extends Component {
 
 
 
-function mapDispatchToProps (dispatch) {
-  return bindActionCreators({updateComposeView}, dispatch);
+function mapStateToProps (state) {
+  return {
+    nameSearchVisible: state.eveMail.nameSearchVisible
+  }
 }
 
-export default connect(null, mapDispatchToProps)(ComposeTopbar);
+function mapDispatchToProps (dispatch) {
+  return bindActionCreators({updateComposeView, updateNameSearchVisible, sendMailChain}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ComposeTopbar);

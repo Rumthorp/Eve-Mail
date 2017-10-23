@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ReactQuill from 'react-quill';
 
-import { nameSearchChain } from '../redux/actions.js';
+import NameSearchBarItem from './name-searchbar-item';
+import { nameSearchChain, pushSendArrayThunk } from '../redux/actions.js';
 
 
 
@@ -13,27 +14,50 @@ class NameSearchBar extends Component {
     this.state = {search: null};
     this.updateSearchField = this.updateSearchField.bind(this);
     this.runSearch = this.runSearch.bind(this);
+    this.nameClick = this.nameClick.bind(this);
   }
 
-  updateSearchField (value) {
-    this.setState({search: value});
+  updateSearchField (event) {
+    this.setState({search: event.currentTarget.value});
   }
 
   runSearch () {
-    nameSearchChain(this.state.search);
+    this.props.nameSearchChain(this.state.search);
+  }
+
+  nameClick (ele) {
+    this.props.pushSendArrayThunk(ele);
   }
 
   render () {
-    let results = this.props.nameSearchResults;
+    let results = null;
 
-    return(
-      <div>
-        <button onClick={this.runSearch}>Search</button>
-        <ReactQuill theme='bubble'
-                    onChange={this.updateSearchField}
-                    />
-      </div>
-    )
+    if (this.props.nameSearchResults) {
+      results = this.props.nameSearchResults.map((ele, ind) => {
+        return <NameSearchBarItem name={ele.character_name} clickFunction={() => {this.nameClick(ele)}} key={ind} />
+      })
+    }
+
+    if (this.props.nameSearchVisible && this.props.composeView === 'opened') {
+      return(
+        <div className='name-searchbar-div'>
+          <div>
+            <button onClick={this.runSearch}>Search</button>
+          </div>
+          <div>
+            <form>
+              <input autoFocus onChange={this.updateSearchField} type='text'></input>
+            </form>
+          </div>
+          <div>
+            {results}
+          </div>
+        </div>
+      )
+    }
+
+  return null;
+
   }
 }
 
@@ -41,13 +65,15 @@ class NameSearchBar extends Component {
 
 function mapStateToProps (state) {
   return {
+    composeView: state.eveMail.composeView,
+    nameSearchVisible: state.eveMail.nameSearchVisible,
     nameSearchBusy: state.eveMail.nameSearchBusy,
     nameSearchResults: state.eveMail.nameSearchResults
   }
 }
 
 function mapDispatchToProps (dispatch) {
-  return bindActionCreators({nameSearchChain} ,dispatch)
+  return bindActionCreators({nameSearchChain, pushSendArrayThunk} ,dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(NameSearchBar);

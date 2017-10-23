@@ -264,30 +264,6 @@ export function copyTokenDataFromLocalStorageToRedux (accessToken, refreshToken)
 
 
 
-export function eveMailAddComposeSendArray (itemToAdd, array) {
-  let newArray = array;
-  newArray.push(itemToAdd);
-
-  return {
-    type: 'EVE_MAIL_ADD_COMPOSE_SEND_ARRAY',
-    payload: newArray
-  };
-}
-
-
-
-export function eveMailRemoveComposeSendArray (ind, composeSendArray) {
-  let newArray = composeSendArray;
-  newArray.splice(ind, 1);
-
-  return {
-    type: 'EVE_MAIL_REMOVE_COMPOSE_SEND_ARRAY',
-    payload: newArray
-  };
-}
-
-
-
 export function updateTokenIntervalStatus (status) {
   return {
     type: 'updateTokenIntervalStatus',
@@ -319,6 +295,35 @@ export function updateNameSearchBusy (status) {
   return {
     type: 'updateNameSearchBusy',
     payload: status
+  }
+}
+
+
+
+export function pushSendArray (person) {
+  return {
+    type: 'pushSendArray',
+    payload: person
+  }
+}
+
+
+
+export function pushSendArrayThunk (person) {
+  return (dispatch, getState) => {
+    let test = getState().eveMail.sendArray.find((ele) => ele.character_id === person.character_id)
+    if (!test) {
+      dispatch(pushSendArray(person));
+    }
+  }
+}
+
+
+
+export function removeSendArray (index) {
+  return {
+    type: 'removeSendArray',
+    payload: index
   }
 }
 
@@ -361,6 +366,81 @@ export function nameSearch (name) {
   return {
     type: 'nameSearch',
     payload: nameSearchResults
+  }
+}
+
+
+
+export function updateSubject (subject) {
+  return {
+    type: 'updateSubject',
+    payload: subject
+  }
+}
+
+
+
+export function updateMessage (message) {
+  return {
+    type: 'updateMessage',
+    payload: message
+  }
+}
+
+
+
+export function sendMail (message, subject, characterId, accessToken, sendArray) {
+  let url = 'https://esi.tech.ccp.is/latest/characters/' + characterId + '/mail/?datasource=tranquility';
+  let accessTokenString = 'Bearer ' + accessToken;
+  let recipientsArray = [];
+  sendArray.forEach((ele) => {
+    let newRecipient = {"recipient_id": ele.character_id, "recipient_type": "character" };
+    recipientsArray.push(newRecipient);
+  });
+  let payload = axios({
+    "method": "post",
+    "url": url,
+    "headers": {
+      "Authorization": accessTokenString,
+      "Accept": 'application/json',
+      "Content-Type": 'application/json'
+    },
+    data: {
+      "approved_cost": 0,
+      "body": message,
+      "recipients": recipientsArray,
+      "subject": subject
+    }
+  })
+
+  return {
+    type: 'sendMail',
+    payload: payload
+  }
+}
+
+
+
+export function logout () {
+  localStorage.removeItem('tokens');
+
+  return {
+    type: 'logout',
+    payload: null
+  }
+}
+
+
+
+export function sendMailChain () {
+  return (dispatch, getState) => {
+    let message = getState().eveMail.message;
+    let subject = getState().eveMail.subject;
+    let characterId = getState().eveMail.characterId;
+    let accessToken = getState().eveMail.accessToken;
+    let sendArray = getState().eveMail.sendArray;
+
+    dispatch(sendMail(message, subject, characterId, accessToken, sendArray));
   }
 }
 

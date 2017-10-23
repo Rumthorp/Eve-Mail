@@ -3,7 +3,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 
-import Inbox from './inbox';
 import Header from './header';
 import MailBodyContainer from './mail-body-container';
 import {handleMailBody} from '../redux/actions';
@@ -37,7 +36,7 @@ class InboxContainer extends Component {
     return (
       <Switch>
         <Route path='/mail/inbox/:mailId' component={MailBodyContainer} />
-        <Route path='/mail/inbox' render={() => <div>{headerList}</div>} />
+        <Route path='/mail/inbox' render={() => <div className='header-list'>{headerList}</div>} />
       </Switch>
     )
   }

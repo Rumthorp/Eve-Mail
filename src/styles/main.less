@@ -15,7 +15,7 @@
 
 .main-div {
   background-image: url('../assets/background-nebula.jpg');
-  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 .sidebar-shell {
@@ -35,8 +35,7 @@
 .mail-shell {
   height: 100vh;
   width: 80%;
-  background: @mailShellBackgroundColor;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 
@@ -47,12 +46,35 @@
   padding: 10px;
 }
 
+.header-list {
+  display: flex;
+  flex-direction: column;
+  width: 97%;
+  background: @mailShellBackgroundColor;
+  background-size: contain;
+}
+
 .header {
   font-family: eve;
   font-style: italic;
   font-weight: bold;
   color: @headerText;
   text-shadow: 1px 1px @headerOutline;
+  display: flex;
+  align-items: flex-start;
+  border-bottom: .2px solid white;
+  width: 100%;
+  padding: 10px 0px;
+}
+
+.header-sender {
+  width: 40vh;
+  align-items: center;
+}
+
+.header-subject {
+  width: 80vh;
+  align-items: center;
 }
 
 .compose-shell {
@@ -62,10 +84,10 @@
   text-shadow: 1px 1px @headerOutline;
   background-color: @composeShellBackgroundColor;
   z-index: 10;
-  top: 40%;
+  top: 25vh;
   right: 2%;
   width: 40%;
-  height: 60%;
+  height: 75vh;
   margin: 0px;
 }
 
@@ -88,14 +110,29 @@
 
 .ql-container {
   position: absolute;
-  height: 67%;
+  height: 55vh;
   width: 100%;
 }
 
-.nameSearchBarDiv {
-  display: inline-block;
-  width: 100%;
-  height: 100%;
-  position: relative;
-  left: -200px;
+.name-searchbar-div {
+  text-align: center;
+  position: absolute;
+  font-family: eve;
+  overflow-y: auto;
+  overflow-x: hidden;
+  color: @headerText;
+  text-shadow: 1px 1px @headerOutline;
+  background-color: @composeShellBackgroundColor;
+  z-index: 10;
+  top: 35%;
+  right: 42%;
+  width: 22%;
+  height: 65%;
+  margin: 0px;
+}
+
+.send-bar-div {
+  height: 42px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }

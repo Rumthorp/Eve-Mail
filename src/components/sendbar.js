@@ -1,38 +1,49 @@
 import React, { Component } from 'react';
+import ReactDOM from "react-dom";
 import { bindActionCreators } from 'redux';
 import ReactQuill from 'react-quill';
 import { connect } from 'react-redux';
 
-import { updateNameSearchVisible } from '../redux/actions';
-import SendBarItem from './sendbar-item';
+import { removeSendArray } from '../redux/actions';
 
 
 
 class SendBar extends Component {
   constructor (props) {
-    super(props)
-    this.findNameClick = this.findNameClick.bind(this);
+    super(props);
+    this.sendBarNameClick = this.sendBarNameClick.bind(this);
   }
 
-  findNameClick () {
-    let status = true;
-    if (this.props.nameSearchVisible) {
-      status = false;
+  sendBarNameClick (ind) {
+    this.props.removeSendArray(ind);
+  }
+
+  scrollToBottom () {
+    const node = ReactDOM.findDOMNode(this.refs[this.props.sendArray.length - 1]);
+    node.scrollIntoView({ block: 'end', behavior: "smooth" });
+  }
+
+  componentDidUpdate (prevProps, prevState) {
+    if (prevProps.sendArray.length - 1 < this.props.sendArray.length - 1) {
+      this.scrollToBottom();
     }
-    
-    this.props.updateNameSearchVisible(status);
   }
 
   render () {
     let sendList = null;
 
-    // if (this.props.sendArray.length > 0) {
-    //   console.log(this.props.sendArray)
-    // }
+    if (this.props.sendArray.length > 0) {
+      sendList = this.props.sendArray.map((ele, ind) => {
+        return (
+          <div key={ind} ref={ind}>
+            <button onClick={() => {this.sendBarNameClick(ind)}}>{ele.character_name}</button>
+          </div>
+        )
+      })
+    }
 
     return (
-      <div>
-        <button onClick={this.findNameClick}>Find Name</button>
+      <div className='send-bar-div'>
         {sendList}
       </div>
     )
@@ -42,13 +53,12 @@ class SendBar extends Component {
 
 
 function mapDispatchToProps (dispatch) {
-  return bindActionCreators({updateNameSearchVisible}, dispatch);
+  return bindActionCreators({removeSendArray}, dispatch);
 }
 
 function mapStateToProps (state) {
   return {
-    sendArray: state.eveMail.sendArray,
-    nameSearchVisible: state.eveMail.nameSearchVisible
+    sendArray: state.eveMail.sendArray
   }
 }
 
