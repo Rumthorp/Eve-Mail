@@ -135,8 +135,6 @@ export default function (state = initialState, action) {
     return Object.assign({}, state, {
       message: action.payload
     })
-  case 'logout':
-    state = undefined;
   }
   return state;
 }

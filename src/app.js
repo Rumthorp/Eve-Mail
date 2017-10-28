@@ -1,22 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
-import { createBrowserHistory } from 'history';
-import { syncHistoryWithStore } from 'react-router-redux';
+import { ConnectedRouter } from 'react-router-redux';
 
-import store from './redux/configure-store';
-import Router from './router';
+import { store, history } from './redux/configure-store';
+import TopRouter from './top-router';
 
-const HISTORY = syncHistoryWithStore(createBrowserHistory(), store);
+
 
 require('./styles/main.less');
 
 ReactDOM.render(
   <Provider store={store}>
-    <BrowserRouter history={HISTORY}>
-      <Router/>
-    </BrowserRouter>
+    <ConnectedRouter history={history}>
+      <TopRouter/>
+    </ConnectedRouter>
   </Provider>
   , document.getElementById('react')
 );
