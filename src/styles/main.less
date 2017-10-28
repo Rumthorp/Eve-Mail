@@ -13,23 +13,45 @@
   margin: 0px;
 }
 
+body, html {
+  height: 100%;
+}
+
 .main-div {
   background-image: url('../assets/background-nebula.jpg');
   background-repeat: no-repeat;
+  background-size: cover;
+  height: 100vh;
+}
+
+.login-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-button {
+  height: 6%;
+}
+
+.login-button-img {
+  object-fit: cover;
+  min-height: 100%;
 }
 
 .sidebar-shell {
-  height: 100vh;
+  height: 100%;
   width: 20%;
   float: left;
   overflow: hidden
 }
 
 .sidebar-content {
-  width: 20%;
-  height: 100vh;
   margin: 0px 5px;
   line-height: 1.5em;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .mail-shell {
@@ -41,7 +63,7 @@
 
 .mail-headers {
   width: 80%;
-  height: 100vh;
+  height: 100%;
   margin: 0px;
   padding: 10px;
 }
