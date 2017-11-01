@@ -36,7 +36,7 @@ class InboxContainer extends Component {
     return (
       <Switch>
         <Route path='/mail/inbox/:mailId' component={MailBodyContainer} />
-        <Route path='/mail/inbox' render={() => <div className='header-list'>{headerList}</div>} />
+        <Route path='/mail/inbox' render={() => <div className='mail-display'>{headerList}</div>} />
       </Switch>
     )
   }

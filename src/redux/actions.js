@@ -422,7 +422,7 @@ export function sendMail (message, subject, characterId, accessToken, sendArray)
 
 
 export function logout () {
-  localStorage.removeItem('tokens');
+  localStorage.clear();
 
   return {
     type: 'logout',
