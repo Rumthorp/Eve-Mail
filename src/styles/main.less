@@ -54,6 +54,45 @@ body, html {
   height: 100%;
 }
 
+.sidebar-top-row {
+  display: flex;
+  flex-direction: row;
+  height: 15%;
+}
+
+.sidebar-top-row-buttons {
+  width: 50%;
+}
+
+.sidebar-buttons {
+  height: 10%;
+}
+
+.sidebar-logout-div {
+  height: 35%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.sidebar-logout-button {
+  height: 50%;
+}
+
+.refresh-button {
+  background-image: url(../assets/refresh-icon.png);
+  background-size: 115%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.compose-button {
+  background-image: url(../assets/compose-icon.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
 .mail-shell {
   height: 100vh;
   width: 80%;
@@ -68,12 +107,22 @@ body, html {
   padding: 10px;
 }
 
-.header-list {
+.mail-display {
   display: flex;
   flex-direction: column;
   width: 97%;
   background: @mailShellBackgroundColor;
   background-size: contain;
+}
+
+.mail-body-buttons-div {
+  display: flex;
+  justify-content: center;
+}
+
+.mail-display-buttons {
+  height: 12vh;
+  width: 12vh;
 }
 
 .header {
@@ -128,12 +177,6 @@ body, html {
 
 .right-buttons {
   float: right;
-}
-
-.ql-container {
-  position: absolute;
-  height: 55vh;
-  width: 100%;
 }
 
 .name-searchbar-div {

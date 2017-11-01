@@ -31,23 +31,18 @@ class Sidebar extends Component {
   render () {
     return (
       <div className='sidebar-content'>
-        <button onClick={this.clickRefresh.bind(this)}>Refresh</button>
-        <br/>
-        <button onClick={this.clickCompose.bind(this)}>Compose</button>
-        <br/>
-        <button onClick={this.clickSpecificMailList.bind(this, 'mailHeadersInbox')}>Inbox</button>
-        <br/>
-        <button onClick={this.clickSpecificMailList.bind(this, 'mailHeadersPersonal')}>Personal</button>
-        <br/>
-        <button onClick={this.clickSpecificMailList.bind(this, 'mailHeadersAlliance')}>Alliance</button>
-        <br/>
-        <button onClick={this.clickSpecificMailList.bind(this, 'mailHeadersCorporation')}>Corporation</button>
-        <br/>
-        <button onClick={this.clickSpecificMailList.bind(this, 'mailHeadersSent')}>Sent</button>
-        <br/>
-        <button>Trash</button>
-        <br/>
-        <button onClick={this.clickLogout}>Logout</button>
+        <div className='sidebar-top-row'>
+          <button className='sidebar-top-row-buttons refresh-button' onClick={this.clickRefresh.bind(this)}></button>
+          <button className='sidebar-top-row-buttons compose-button' onClick={this.clickCompose.bind(this)}></button>
+        </div>
+        <button className='sidebar-buttons' onClick={this.clickSpecificMailList.bind(this, 'mailHeadersInbox')}>Inbox</button>
+        <button className='sidebar-buttons' onClick={this.clickSpecificMailList.bind(this, 'mailHeadersPersonal')}>Personal</button>
+        <button className='sidebar-buttons' onClick={this.clickSpecificMailList.bind(this, 'mailHeadersAlliance')}>Alliance</button>
+        <button className='sidebar-buttons' onClick={this.clickSpecificMailList.bind(this, 'mailHeadersCorporation')}>Corporation</button>
+        <button className='sidebar-buttons' onClick={this.clickSpecificMailList.bind(this, 'mailHeadersSent')}>Sent</button>
+        <div className='sidebar-logout-div'>
+          <button className='sidebar-logout-button' onClick={this.clickLogout}>Logout</button>
+        </div>
       </div>
     );
   }
