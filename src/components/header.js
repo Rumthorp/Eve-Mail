@@ -2,7 +2,7 @@ import React from 'react';
 
 
 
-const Header = ({subject, from, click, timestamp}) => {
+const Header = ({ subject, from, click, timestamp, deleteMail }) => {
   let mailSendDate = new Date(timestamp);
   let currentTime = new Date().getTime();
   let time;
@@ -14,11 +14,15 @@ const Header = ({subject, from, click, timestamp}) => {
   }
 
   return (
-    <div className='header' onClick={click} >
-        <p className='header-sender'>{from}</p>
-        <p className='header-subject'>{subject}</p>
-        <p className='header-timestamp'>{time}</p>
+    <div className='header-outer-div'>
+      <div className='header' onClick={ click } >
+        <p className='header-sender'>{ from }</p>
+        <p className='header-subject'>{ subject }</p>
+        <p className='header-timestamp'>{ time }</p>
+      </div>
+      <button className='header-delete-button' onClick={ deleteMail }></button>
     </div>
+
   )
 }
 

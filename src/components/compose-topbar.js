@@ -36,10 +36,10 @@ class ComposeTopbar extends Component {
   render () {
     return (
       <div className='compose-topbar'>
-        {this.props.composeView === 'opened' && <button onClick={this.findNameClick}>Find Name</button>}
-        {this.props.composeView === 'opened' && <button onClick={this.sendClick}>Send</button>}
-        <button className='right-buttons' onClick={this.handleButtonClick.bind(this, 'closed')}>X</button>
-        <button className='right-buttons' onClick={this.handleButtonClick.bind(this, 'minimized')}>_</button>
+        {this.props.composeView === 'opened' && <button onClick={ this.findNameClick }>Find Name</button>}
+        {this.props.composeView === 'opened' && <button onClick={ this.sendClick }>Send</button>}
+        <button className='right-buttons' onClick={ this.handleButtonClick.bind(this, 'closed') }>X</button>
+        <button className='right-buttons' onClick={ this.handleButtonClick.bind(this, 'minimized') }>_</button>
       </div>
     )
   }
@@ -54,7 +54,7 @@ function mapStateToProps (state) {
 }
 
 function mapDispatchToProps (dispatch) {
-  return bindActionCreators({updateComposeView, updateNameSearchVisible, sendMailChain}, dispatch);
+  return bindActionCreators({ updateComposeView, updateNameSearchVisible, sendMailChain }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ComposeTopbar);
