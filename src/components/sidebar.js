@@ -58,7 +58,7 @@ class Sidebar extends Component {
         <button className='sidebar-buttons' onClick={this.clickSpecificMailList.bind(this, 'mailHeadersCorporation')}>Corporation</button>
         <button className='sidebar-buttons' onClick={this.clickSpecificMailList.bind(this, 'mailHeadersSent')}>Sent</button>
         <div className='sidebar-logout-div'>
-          <button className='sidebar-logout-button' onClick={this.clickLogout}>Logout</button>
+          <button className='sidebar-logout-button' onClick={this.clickLogout.bind(this)}>Logout</button>
         </div>
       </div>
     );

@@ -20,7 +20,7 @@ class SubjectBar extends Component {
     return (
       <div>
         <form>
-          <input type='text' onChange={this.dispatchUpdateSubject}></input>
+          <input type='text' onChange={ this.dispatchUpdateSubject }></input>
         </form>
       </div>
     )

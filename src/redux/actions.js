@@ -32,9 +32,9 @@ export function fetchHeaders (charId, accessToken, lastHeader) {
   let newAuthToken = 'Bearer ' + accessToken;
   let baseUrl = 'https://esi.tech.ccp.is/latest/characters/' + charId + '/mail/?';
   if (lastHeader) {
-    baseUrl = baseUrl + 'last_mail_id=' + lastHeader + '&datasource=tranquility';
+    baseUrl = baseUrl + 'datasource=tranquility' + '&last_mail_id=' + lastHeader;
   } else {
-    baseUrl += '?datasource=tranquility';
+    baseUrl += 'datasource=tranquility';
   }
   let mailHeaders = axios({
     method: 'get',
@@ -432,6 +432,38 @@ export function logout () {
 
 
 
+export function fetchHeaderChain () {
+  return (dispatch, getState) => {
+    helperFetchHeaderChain(dispatch, getState, 50)
+  }
+}
+
+function helperFetchHeaderChain (dispatch, getState, newMailCount) {
+  if (newMailCount !== 50) {
+    return;
+  }
+
+  let lastHeaderId;
+  let headers = getState().eveMail.mailHeaders;
+  if (headers[headers.length - 1]) {
+    lastHeaderId = headers[headers.length - 1].mail_id;
+  }
+
+  dispatch(fetchHeaders(getState().eveMail.characterId, getState().eveMail.accessToken, lastHeaderId))
+  .then(() => {
+    newMailCount = getState().eveMail.rawMailHeaders.length;
+    return dispatch(fetchCharacterNames(getState().eveMail.rawMailHeaders));
+  })
+  .then(() => {
+    console.log('test.')
+    dispatch(replaceMailHeadersWithRawMailHeaders(getState().eveMail.rawMailHeaders));
+    dispatch(emptyRawMailHeaders());
+    return helperFetchHeaderChain(dispatch, getState, newMailCount)
+  })
+}
+
+
+
 export function sendMailChain () {
   return (dispatch, getState) => {
     let message = getState().eveMail.message;
@@ -519,14 +551,9 @@ export function initialLoad (needNewToken) {
       return dispatch(fetchUserCharacterInfo(getState().eveMail.accessToken));
     })
     .then(() => {
-      return dispatch(fetchHeaders(getState().eveMail.characterId, getState().eveMail.accessToken));
+      return dispatch(fetchHeaderChain())
     })
     .then(() => {
-      return dispatch(fetchCharacterNames(getState().eveMail.rawMailHeaders));
-    })
-    .then(() => {
-      dispatch(replaceMailHeadersWithRawMailHeaders(getState().eveMail.rawMailHeaders));
-      dispatch(emptyRawMailHeaders());
       dispatch(initialLoadComplete());
     })
   }

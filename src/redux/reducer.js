@@ -46,8 +46,10 @@ export default function (state = initialState, action) {
       rawMailHeaders: action.payload.charNameData
     });
   case 'replaceMailHeadersWithRawMailHeaders':
+    let replacedMailHeaders = state.mailHeaders.slice();
+    replacedMailHeaders = replacedMailHeaders.concat(action.payload)
     return Object.assign({}, state, {
-      mailHeaders: action.payload
+      mailHeaders: replacedMailHeaders
     })
   case 'emptyRawMailHeaders':
     return Object.assign({}, state, {
