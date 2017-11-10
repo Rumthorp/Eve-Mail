@@ -7,9 +7,13 @@ const initialState = {
   refreshToken: null,
   tokenIntervalStatus: null,
   initialLoadComplete: false,
+  pageSetLoading: false,
   rawMailHeaders: [],
   mailHeaders: [],
+  filteredMailHeaders: [],
   mailBodies: {},
+  page: 1,
+  maxPage: 1,
   selectedMailBody: null,
   inboxFilter: null,
   composeView: 'closed',
@@ -42,8 +46,10 @@ export default function (state = initialState, action) {
       rawMailHeaders: action.payload.charNameData
     });
   case 'replaceMailHeadersWithRawMailHeaders':
+    let replacedMailHeaders = state.mailHeaders.slice();
+    replacedMailHeaders = replacedMailHeaders.concat(action.payload)
     return Object.assign({}, state, {
-      mailHeaders: action.payload
+      mailHeaders: replacedMailHeaders
     })
   case 'emptyRawMailHeaders':
     return Object.assign({}, state, {

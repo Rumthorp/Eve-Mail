@@ -14,10 +14,10 @@ class Compose extends Component {
     };
   }
   updateSubject (e) {
-    this.setState({subject: e.currentTarget.value});
+    this.setState({ subject: e.currentTarget.value });
   }
   updateBody (e) {
-    this.setState({body: e.currentTarget.value});
+    this.setState({ body: e.currentTarget.value });
   }
   clickBack () {
     this.props.eveMailAuxWindowDisplayChange(null);
@@ -62,11 +62,11 @@ class Compose extends Component {
 
       let array = [];
       this.props.eveMail.composeSendArray.forEach((ele, ind) => {
-        array.push(<button key={ind} onClick={this.removeSender.bind(this, ind)}>{ele.character_name}</button>);
+        array.push(<button key={ind} onClick={ this.removeSender.bind(this, ind)}>{ele.character_name }</button>);
       });
       sendList = (
         <div>
-          {array}
+          { array }
         </div>
       );
     } else {
@@ -76,12 +76,12 @@ class Compose extends Component {
     return (
       <div>
         <EveNameSearch/>
-        Send to: {sendList}
+        Send to: { sendList }
         <br/>
         <form>
-          <input type="text" placeholder="Subject" onChange={this.updateSubject.bind(this)}></input>
+          <input type="text" placeholder="Subject" onChange={ this.updateSubject.bind(this) }></input>
           <br/>
-          <input type="text" placeholder="Body" onChange={this.updateBody.bind(this)}></input>
+          <input type="text" placeholder="Body" onChange={ this.updateBody.bind(this) }></input>
           <br/>
         </form>
         <button onClick={this.sendMail.bind(this)}>Send Mail</button>
