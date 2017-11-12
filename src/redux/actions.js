@@ -435,12 +435,12 @@ export function logout () {
 export function updateFilterAndFilteredArrayChain (filter) {
   return (dispatch, getState) => {
     dispatch({type: 'updateFilter', payload: filter});
-    dispatch(updateFilteredArray(filter))
+    dispatch(updateFilteredArray(filter, getState().eveMail.mailHeaders))
   }
 }
 
-function updateFilteredArray () {
-  
+function updateFilteredArray (filter, mailHeaders) {
+  mailHeaders.filter(ele => )
 }
 
 
