@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
-import { refreshMailHeaders, updateComposeView, logout } from '../redux/actions';
+import { refreshMailHeaders, updateComposeView, logout, setPage } from '../redux/actions';
 
 
 
@@ -26,14 +26,18 @@ class Sidebar extends Component {
 
   clickPageRight () {
     if (this.props.location.pathname !== '/mail/inbox' && this.props.initialLoadComplete === true) {
-      this.props.history.push('/mail/inbox')
+      this.props.history.push('/mail/inbox');
     }
+
+    this.props.setPage(1);
   }
 
   clickPageLeft () {
     if (this.props.location.pathname !== '/mail/inbox' && this.props.initialLoadComplete === true) {
-      this.props.history.push('/mail/inbox')
+      this.props.history.push('/mail/inbox');
     }
+
+    this.props.setPage(-1);
   }
 
   clickLogout () {
@@ -49,7 +53,7 @@ class Sidebar extends Component {
         </div>
         <div className='sidebar-page-div'>
           <button className='sidebar-page-buttons sidebar-page-button-left' onClick={this.clickPageLeft.bind(this)}></button>
-          <h3>Page</h3>
+          <h3 className='sidebar-page-number'>{ this.props.page }</h3>
           <button className='sidebar-page-buttons sidebar-page-button-right' onClick={this.clickPageRight.bind(this)}></button>
         </div>
         <button className='sidebar-buttons' onClick={this.clickSpecificMailList.bind(this, 'mailHeadersInbox')}>Inbox</button>
@@ -68,11 +72,12 @@ class Sidebar extends Component {
 
 
 function mapDispatchToProps (dispatch) {
-  return bindActionCreators({ refreshMailHeaders, updateComposeView, logout }, dispatch);
+  return bindActionCreators({ refreshMailHeaders, updateComposeView, logout, setPage }, dispatch);
 }
 
 function mapStateToProps (state, ownProps) {
   return {
+    page: state.eveMail.page,
     characterId: state.eveMail.characterId,
     accessToken: state.eveMail.accessToken,
     initialLoadComplete: state.eveMail.initialLoadComplete

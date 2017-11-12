@@ -432,6 +432,61 @@ export function logout () {
 
 
 
+export function updateFilterAndFilteredArrayChain (filter) {
+  return (dispatch, getState) => {
+    dispatch({type: 'updateFilter', payload: filter});
+    dispatch(updateFilteredArray(filter))
+  }
+}
+
+function updateFilteredArray () {
+  
+}
+
+
+
+export function setPage (num) {
+  return (dispatch, getState) => {
+    let currentPage = getState().eveMail.page;
+    let maxPage = getState().eveMail.maxPage;
+    let newCurrentPage = currentPage + num;
+
+    if (newCurrentPage < 0) {
+      newCurrentPage = 1;
+    }
+
+    if (newCurrentPage > maxPage) {
+      newCurrentPage = maxPage;
+    }
+
+    dispatch({type: 'setPage', payload: newCurrentPage})
+  }
+}
+
+
+
+export function findMaxPageThunk () {
+  return (dispatch, getState) => {
+    let mailHeaderCount = getState().eveMail.filteredMailHeaders.length;
+    let maxNumberOfPages;
+
+    if (getState().eveMail >= 50) {
+      maxNumberOfPages = Math.floor(mailHeaderCount / 50)
+      if (mailHeaderCount % 50 !== 0) {
+        maxNumberOfPages += 1
+      }
+    } else {
+      maxNumberOfPages = 1;
+    }
+
+    console.log(maxNumberOfPages);
+
+    dispatch({type: 'setMaxPage', payload: maxNumberOfPages});
+  }
+}
+
+
+
 export function fetchHeaderChain () {
   return (dispatch, getState) => {
     helperFetchHeaderChain(dispatch, getState, 50)
@@ -455,8 +510,8 @@ function helperFetchHeaderChain (dispatch, getState, newMailCount) {
     return dispatch(fetchCharacterNames(getState().eveMail.rawMailHeaders));
   })
   .then(() => {
-    console.log('test.')
     dispatch(replaceMailHeadersWithRawMailHeaders(getState().eveMail.rawMailHeaders));
+    dispatch(findMaxPageThunk());
     dispatch(emptyRawMailHeaders());
     return helperFetchHeaderChain(dispatch, getState, newMailCount)
   })
@@ -527,14 +582,7 @@ export function handleMailBody (mailId, headerIndex) {
 
 export function refreshMailHeaders () {
   return (dispatch, getState) => {
-    dispatch(fetchHeaders(getState().eveMail.characterId, getState().eveMail.accessToken))
-    .then(() => {
-      return dispatch(fetchCharacterNames(getState().eveMail.rawMailHeaders));
-    })
-    .then(() => {
-      dispatch(replaceMailHeadersWithRawMailHeaders(getState().eveMail.rawMailHeaders));
-      dispatch(emptyRawMailHeaders());
-    })
+
   }
 }
 

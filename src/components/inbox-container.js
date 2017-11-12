@@ -31,20 +31,29 @@ class InboxContainer extends Component {
     }
 
     let headerList = null;
+    let page = this.props.page;
+    let startIndex;
+
+    if (page === 1) {
+      startIndex = 0;
+    } else {
+      startIndex = (page - 1) * 49;
+    }
+
 
     if (this.props.mailHeaders.length > 0) {
-      headerList = this.props.mailHeaders.map((ele, ind) => {
-        return <Header {...ele}
-                       key={ind}
-                       click={() => this.click(ele.mail_id, ind)}
-                       deleteMail={() => this.deleteMail(ele.mail_id, ind)} />
+      headerList = this.props.mailHeaders.slice(startIndex, startIndex + 50).map((ele, ind) => {
+        return <Header { ...ele }
+                       key={ ind }
+                       click={ () => this.click(ele.mail_id, ind) }
+                       deleteMail={ () => this.deleteMail(ele.mail_id, ind) } />
       })
     }
 
     return (
       <Switch>
         <Route path='/mail/inbox/:mailId' component={ MailBodyContainer } />
-        <Route path='/mail/inbox' render={() => <div className='mail-display'>{ headerList }</div>} />
+        <Route path='/mail/inbox' render={ () => <div className='mail-display'>{ headerList }</div> } />
       </Switch>
     )
   }
@@ -58,6 +67,7 @@ function mapDispatchToProps (dispatch) {
 
 function mapStateToProps (state) {
   return {
+    page: state.eveMail.page,
     mailHeaders: state.eveMail.mailHeaders,
     inboxFilter: state.eveMail.inboxFilter,
     selectedMailBody: state.eveMail.selectedMailBody
