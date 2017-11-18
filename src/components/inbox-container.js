@@ -18,7 +18,7 @@ class InboxContainer extends Component {
 
   click (mailId, headerIndex) {
     this.props.handleMailBody(mailId, headerIndex);
-    this.props.history.push(`/mail/inbox/${ mailId }`)
+    this.props.history.push(`/mail/inbox/${ mailId }`);
   }
 
   deleteMail (mailId, headerIndex) {
@@ -26,7 +26,7 @@ class InboxContainer extends Component {
   }
 
   render () {
-    if (this.props.mailHeaders == null) {
+    if (this.props.filteredMailHeaders === null) {
       return <Redirect to='/mail' />
     }
 
@@ -40,9 +40,8 @@ class InboxContainer extends Component {
       startIndex = (page - 1) * 49;
     }
 
-
-    if (this.props.mailHeaders.length > 0) {
-      headerList = this.props.mailHeaders.slice(startIndex, startIndex + 50).map((ele, ind) => {
+    if (this.props.filteredMailHeaders.length > 0) {
+      headerList = this.props.filteredMailHeaders.slice(startIndex, startIndex + 50).map((ele, ind) => {
         return <Header { ...ele }
                        key={ ind }
                        click={ () => this.click(ele.mail_id, ind) }
@@ -68,7 +67,7 @@ function mapDispatchToProps (dispatch) {
 function mapStateToProps (state) {
   return {
     page: state.eveMail.page,
-    mailHeaders: state.eveMail.mailHeaders,
+    filteredMailHeaders: state.eveMail.filteredMailHeaders,
     inboxFilter: state.eveMail.inboxFilter,
     selectedMailBody: state.eveMail.selectedMailBody
   }
