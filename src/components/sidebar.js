@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
-import { updateComposeView, logout, setPage, updateFilterAndFilteredArrayChain, fetchHeaderChain } from '../redux/actions';
+import { updateComposeView, logout, setPage, updateFilterAndFilteredArrayChain, fetchHeaderChain, refreshHeaderChain } from '../redux/actions';
 
 
 
@@ -14,7 +14,7 @@ class Sidebar extends Component {
 
   clickRefresh () {
     if (this.props.fetchHeaderCycleStatus === 'ready') {
-      this.props.fetchHeaderChain();
+      this.props.refreshHeaderChain();
     }
   }
 
@@ -81,7 +81,7 @@ class Sidebar extends Component {
 
 
 function mapDispatchToProps (dispatch) {
-  return bindActionCreators({ updateComposeView, logout, setPage, updateFilterAndFilteredArrayChain, fetchHeaderChain }, dispatch);
+  return bindActionCreators({ updateComposeView, logout, setPage, updateFilterAndFilteredArrayChain, fetchHeaderChain, refreshHeaderChain }, dispatch);
 }
 
 function mapStateToProps (state, ownProps) {

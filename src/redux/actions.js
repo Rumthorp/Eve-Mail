@@ -531,7 +531,7 @@ export function findMaxPageThunk () {
 export function refreshHeaderChain () {
   return (dispatch, getState) => {
     dispatch(updateFetchHeaderCycleStatus('busy'));
-
+    dispatch(emptyMailHeaders());
     helperFetchHeaderChain(dispatch, getState, 50);
   }
 }
