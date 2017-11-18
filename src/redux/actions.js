@@ -131,6 +131,15 @@ export function emptyRawMailHeaders () {
 
 
 
+export function emptyMailHeaders () {
+  return {
+    type: 'emptyMailHeaders',
+    payload: []
+  }
+}
+
+
+
 export function addMailBodyAndHeaderToSelectedMailBody (body, header, mailId, headerIndex) {
   let bodyHeaderObj = {header: header, body: body, mailId: mailId, headerIndex: headerIndex};
   return {
@@ -421,6 +430,15 @@ export function sendMail (message, subject, characterId, accessToken, sendArray)
 
 
 
+export function updateFetchHeaderCycleStatus (status) {
+  return {
+    type: 'updateFetchHeaderCycleStatus',
+    payload: status
+  }
+}
+
+
+
 export function logout () {
   localStorage.clear();
 
@@ -432,17 +450,102 @@ export function logout () {
 
 
 
+export function updateFilterAndFilteredArrayChain (filter) {
+  return (dispatch, getState) => {
+    if (!filter) {
+      filter = getState().eveMail.filter;
+    }
+
+    if (filter !== getState().eveMail.filter) {
+      dispatch(setPage(Number.NEGATIVE_INFINITY));
+    }
+
+    dispatch({type: 'updateFilter', payload: filter});
+    dispatch(updateFilteredMailHeaders(filter, getState().eveMail.mailHeaders));
+    dispatch(findMaxPageThunk());
+  }
+}
+
+function updateFilteredMailHeaders (filter, mailHeaders) {
+  let filteredMailHeaders;
+
+  if (filter === 'inbox') {
+    filteredMailHeaders = mailHeaders.filter((ele) => {
+      let recipientType = ele.recipients[0].recipient_type;
+      return recipientType === 'character' || recipientType === 'alliance' || recipientType === 'corporation';
+    })
+  } else {
+    filteredMailHeaders = mailHeaders.filter((ele) => {
+      return ele.recipients[0].recipient_type === filter;
+    })
+  }
+
+  return {
+    type: 'updateFilteredMailHeaders',
+    payload: filteredMailHeaders
+  }
+}
+
+
+
+export function setPage (num) {
+  return (dispatch, getState) => {
+    let currentPage = getState().eveMail.page;
+    let maxPage = getState().eveMail.maxPage;
+    let newCurrentPage = currentPage + num;
+
+    if (newCurrentPage <= 0) {
+      newCurrentPage = 1;
+    }
+
+    if (newCurrentPage > maxPage) {
+      newCurrentPage = maxPage;
+    }
+
+    dispatch({type: 'setPage', payload: newCurrentPage})
+  }
+}
+
+
+
+export function findMaxPageThunk () {
+  return (dispatch, getState) => {
+    let mailHeaderCount = getState().eveMail.filteredMailHeaders.length;
+    let maxNumberOfPages;
+
+    if (mailHeaderCount >= 50) {
+      maxNumberOfPages = Math.floor(mailHeaderCount / 50)
+      if (mailHeaderCount % 50 !== 0) {
+        maxNumberOfPages += 1
+      }
+    } else {
+      maxNumberOfPages = 1;
+    }
+
+    dispatch({type: 'setMaxPage', payload: maxNumberOfPages});
+  }
+}
+
+
+
+export function refreshHeaderChain () {
+  return (dispatch, getState) => {
+    dispatch(updateFetchHeaderCycleStatus('busy'));
+    dispatch(emptyMailHeaders());
+    helperFetchHeaderChain(dispatch, getState, 50);
+  }
+}
+
+
+
 export function fetchHeaderChain () {
   return (dispatch, getState) => {
-    helperFetchHeaderChain(dispatch, getState, 50)
+    dispatch(updateFetchHeaderCycleStatus('busy'));
+    helperFetchHeaderChain(dispatch, getState, 50);
   }
 }
 
 function helperFetchHeaderChain (dispatch, getState, newMailCount) {
-  if (newMailCount !== 50) {
-    return;
-  }
-
   let lastHeaderId;
   let headers = getState().eveMail.mailHeaders;
   if (headers[headers.length - 1]) {
@@ -455,9 +558,16 @@ function helperFetchHeaderChain (dispatch, getState, newMailCount) {
     return dispatch(fetchCharacterNames(getState().eveMail.rawMailHeaders));
   })
   .then(() => {
-    console.log('test.')
     dispatch(replaceMailHeadersWithRawMailHeaders(getState().eveMail.rawMailHeaders));
+    dispatch(updateFilteredMailHeaders(getState().eveMail.filter, getState().eveMail.mailHeaders));
+    dispatch(findMaxPageThunk());
     dispatch(emptyRawMailHeaders());
+
+    if (newMailCount !== 50) {
+      dispatch(updateFetchHeaderCycleStatus('ready'));
+      return;
+    }
+
     return helperFetchHeaderChain(dispatch, getState, newMailCount)
   })
 }
@@ -527,14 +637,7 @@ export function handleMailBody (mailId, headerIndex) {
 
 export function refreshMailHeaders () {
   return (dispatch, getState) => {
-    dispatch(fetchHeaders(getState().eveMail.characterId, getState().eveMail.accessToken))
-    .then(() => {
-      return dispatch(fetchCharacterNames(getState().eveMail.rawMailHeaders));
-    })
-    .then(() => {
-      dispatch(replaceMailHeadersWithRawMailHeaders(getState().eveMail.rawMailHeaders));
-      dispatch(emptyRawMailHeaders());
-    })
+
   }
 }
 
