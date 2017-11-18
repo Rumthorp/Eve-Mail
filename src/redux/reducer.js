@@ -7,6 +7,7 @@ const initialState = {
   refreshToken: null,
   tokenIntervalStatus: null,
   initialLoadComplete: false,
+  fetchHeaderCycleStatus: 'busy',
   pageSetLoading: false,
   rawMailHeaders: [],
   mailHeaders: [],
@@ -15,7 +16,7 @@ const initialState = {
   page: 1,
   maxPage: 1,
   selectedMailBody: null,
-  inboxFilter: null,
+  filter: 'inbox',
   composeView: 'closed',
   sendArray: [],
   subject: null,
@@ -41,6 +42,10 @@ export default function (state = initialState, action) {
     return Object.assign({}, state, {
       rawMailHeaders: action.payload.headers
     });
+  case 'updateFetchHeaderCycleStatus':
+    return Object.assign({}, state, {
+      fetchHeaderCycleStatus: action.payload
+    });
   case 'fetchCharacterNames':
     return Object.assign({}, state, {
       rawMailHeaders: action.payload.charNameData
@@ -54,6 +59,18 @@ export default function (state = initialState, action) {
   case 'emptyRawMailHeaders':
     return Object.assign({}, state, {
       rawMailHeaders: action.payload
+    })
+  case 'emptyMailHeaders':
+    return Object.assign({}, state, {
+      mailHeaders: action.payload
+    })
+  case 'updateFilter':
+    return Object.assign({}, state, {
+      filter: action.payload
+    })
+  case 'updateFilteredMailHeaders':
+    return Object.assign({}, state, {
+      filteredMailHeaders: action.payload
     })
   case 'sortMailHeaders':
     return Object.assign({}, state, {
@@ -81,8 +98,10 @@ export default function (state = initialState, action) {
     return Object.assign({}, state);
   case 'deleteHeader':
     let newMailHeaders = state.mailHeaders.filter((ele, ind) => ind !== action.payload);
+    let newFilteredMailHeaders = state.filteredMailHeaders.filter((ele, ind) => ind !== action.payload);
     return Object.assign({}, state, {
-      mailHeaders: newMailHeaders
+      mailHeaders: newMailHeaders,
+      filteredMailHeaders: newFilteredMailHeaders
     })
   case 'deleteMailBody':
     let copy = Object.assign({}, state);
@@ -140,6 +159,14 @@ export default function (state = initialState, action) {
   case 'updateMessage':
     return Object.assign({}, state, {
       message: action.payload
+    })
+  case 'setPage':
+    return Object.assign({}, state, {
+      page: action.payload
+    })
+  case 'setMaxPage':
+    return Object.assign({}, state, {
+      maxPage: action.payload
     })
   }
   return state;
